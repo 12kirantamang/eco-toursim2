@@ -1,2 +1,0 @@
-# eco-toursim
-hackathon
