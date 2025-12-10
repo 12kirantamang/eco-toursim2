@@ -1,0 +1,8 @@
+Flag icons would be created here for language selector:
+- flag-en.png (UK flag)
+- flag-ja.png (Japan flag)  
+- flag-ne.png (Nepal flag)
+- flag-my.png (Myanmar flag)
+- flag-vi.png (Vietnam flag)
+
+These would be small 20x15px icons for the language dropdown menu.

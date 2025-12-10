@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="bookBtn">Book Hotels - Discover Okayama</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Find and book the best hotels in Okayama. From luxury resorts to traditional ryokan, discover perfect accommodations for your stay.">
+    <meta name="keywords" content="Okayama hotels, hotel booking, ryokan, accommodation, Japan hotels">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/adventure.css">
+    
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" data-translate="siteTitle">Discover Okayama</a>
+            <!-- ham menu -->
+               <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+            
+            <ul class="nav-links">
+                <li><a href="index.html" data-translate="aboutTitle">Home</a></li>
+                <li><a href="index.html#about" data-translate="aboutTitle">About</a></li>
+                <li><a href="attractions.html" data-translate="attractionsTitle">Attractions</a></li>
+                <li><a href="adventure.html" data-translate="bookBtn">Adventure</a></li>
+                <li><a href="index.html#food" data-translate="foodTitle">Food</a></li>
+                <li><a href="index.html#events" data-translate="eventsTitle">Events</a></li>
+                <li><a href="contact.html" data-translate="contactTitle">Contact</a></li>
+            </ul>
+            
+            <!-- <div class="language-selector">
+                <button class="language-btn" aria-label="Select language">
+                    <img src="resources/icons/flag-en.png" alt="" class="language-flag current-flag" width="20" height="15">
+                    <span class="current-lang">English</span>
+                    <span aria-hidden="true">▼</span>
+                </button>
+                <div class="language-dropdown" role="menu">
+                    <div class="language-option" data-lang="en" role="menuitem">
+                        <img src="resources/icons/flag-en.png" alt="" class="language-flag" width="20" height="15">
+                        <span>English</span>
+                    </div>
+                    <div class="language-option" data-lang="ja" role="menuitem">
+                        <img src="resources/icons/flag-ja.png" alt="" class="language-flag" width="20" height="15">
+                        <span>日本語</span>
+                    </div>
+                    <div class="language-option" data-lang="ne" role="menuitem">
+                        <img src="resources/icons/flag-ne.png" alt="" class="language-flag" width="20" height="15">
+                        <span>नेपाली</span>
+                    </div>
+                    <div class="language-option" data-lang="my" role="menuitem">
+                        <img src="resources/icons/flag-my.png" alt="" class="language-flag" width="20" height="15">
+                        <span>မြန်မာ</span>
+                    </div>
+                    <div class="language-option" data-lang="vi" role="menuitem">
+                        <img src="resources/icons/flag-vi.png" alt="" class="language-flag" width="20" height="15">
+                        <span>Tiếng Việt</span>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="hotels-header">
+        <div class="container">
+            <h1 data-translate="bookBtn">Book Your Perfect Adventure</h1>
+            <p>Find the best accommodations in Okayama for every budget and preference</p>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <form class="search-form" id="hotel-search-form">
+                <div class="form-group">
+                    <label class="form-label">Check-in Date</label>
+                    <input type="date" class="form-input" id="checkin-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Check-out Date</label>
+                    <input type="date" class="form-input" id="checkout-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Person</label>
+                    <select class="form-input" id="guests">
+                        <option value="1">1 Person</option>
+                        <option value="2" selected>2 Person</option>
+                        <option value="3">3 Person</option>
+                        <option value="4">4 Person</option>
+                        <option value="5">5+ Person</option>
+                    </select>
+                </div>
+                
+            </form>
+        </div>
+    </section>
+
+    <!-- Filters Section -->
+    <!-- <section class="filters-section">
+        <div class="container">
+            <div class="filter-controls">
+                <button class="filter-btn active" data-filter="all">All Hotels</button>
+                <button class="filter-btn" data-filter="luxury">Luxury</button>
+                <button class="filter-btn" data-filter="business">Business</button>
+                <button class="filter-btn" data-filter="budget">Budget</button>
+                <button class="filter-btn" data-filter="ryokan">Ryokan</button>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Hotels Grid -->
+    <section class="section">
+        <div class="container">
+            <div class="hotels-grid" id="hotels-grid">
+                <!-- Hotel ANA Crowne Plaza -->
+                <div class="hotel-card" data-category="luxury business" data-name="ANA Crowne Plaza">
+                    <img src="resources/hotel/Panoramic.png" alt="Panoramic Views" class="hotel-image">
+                    <div class="hotel-content">
+                        <div class="hotel-header">
+                            <h3 class="hotel-name">Panoramic Views from the Castle Keep</h3>
+                            <div class="hotel-rating">
+                                
+                            </div>
+                        </div>
+                        
+                      
+                        <div class="hotel-price">
+                            <div class="availability"></div>
+                            <div class="price-info">
+                                <!-- <div class="price-amount">¥12,000</div> -->
+                                <div class="price-period"></div>
+                            </div>
+                        </div>
+                        <button class="book-btn" onclick="openBookingModal('ana-hotel')" data-translate="bookNow">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Hotel Granvia Okayama -->
+                <div class="hotel-card" data-category="luxury business" data-name="Hotel Granvia">
+                    <img src="resources/hotel/cycling.png" alt="Cycling" class="hotel-image">
+                    <div class="hotel-content">
+                        <div class="hotel-header">
+                            <h3 class="hotel-name">Cycling and Walking along the River</h3>
+                            <div class="hotel-rating">
+                                
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="hotel-price">
+                            <div class="availability"></div>
+                            <div class="price-info">
+                                <!-- <div class="price-amount">¥15,000</div> -->
+                                <div class="price-period"></div>
+                            </div>
+                        </div>
+                        <button class="book-btn" onclick="openBookingModal('granvia-hotel')" data-translate="bookNow">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Okayama Koraku Hotel -->
+                <div class="hotel-card" data-category="business budget" data-name="Koraku Hotel">
+                    <img src="resources/hotel/garden.png" alt="Exploring" class="hotel-image">
+                    <div class="hotel-content">
+                        <div class="hotel-header">
+                            <h3 class="hotel-name">Exploring Japan's Top Garden</h3>
+                            <div class="hotel-rating">
+                                
+                            </div>
+                        </div>
+                       
+                        <div class="hotel-price">
+                            <div class="availability"></div>
+                            <div class="price-info">
+                                <!-- <div class="price-amount">¥8,500</div> -->
+                                <div class="price-period"></div>
+                            </div>
+                        </div>
+                        <button class="book-btn" onclick="openBookingModal('koraku-hotel')" data-translate="bookNow">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Tsurugata Ryokan -->
+                <div class="hotel-card" data-category="ryokan luxury" data-name="Tsurugata Ryokan">
+                    <img src="resources/hotel/kimono.png" alt="Kimono" class="hotel-image">
+                    <div class="hotel-content">
+                        <div class="hotel-header">
+                            <h3 class="hotel-name">Kimono</h3>
+                            <div class="hotel-rating">
+                                
+                            </div>
+                        </div>
+                    
+                       
+                        <div class="hotel-price">
+                            <div class="availability"></div>
+                            <div class="price-info">
+                                <!-- <div class="price-amount">¥25,000</div> -->
+                                <div class="price-period"></div>
+                            </div>
+                        </div>
+                        <button class="book-btn" onclick="openBookingModal('tsurugata-ryokan')" data-translate="bookNow">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Daiwa Roynet Hotel -->
+               
+                
+           
+               
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+            <div class="booking-modal-body">
+                <h2>Book your Adventure</h2>
+                
+                <!-- Booking Steps -->
+                <div class="booking-steps">
+                    <div class="step active" id="step-1">1</div>
+                    <div class="step" id="step-2">2</div>
+                    <div class="step" id="step-3">3</div>
+                    <div class="step" id="step-4">4</div>
+                </div>
+                
+                <!-- Step 1: Room Selection -->
+                <div class="booking-form active" id="form-step-1">
+                    <h3>Thank you</h3>
+                    <div class="room-selection">
+                        <div class="room-option" onclick="selectRoom(this, 'Standard', 12000)">
+                            <div class="room-header">
+                                <span class="room-name"></span>
+                                <!-- <span class="room-price">¥12,000/night</span> -->
+                            </div>
+                            <p>Select here to Book</p>
+                        </div>
+                        
+                        <!-- <div class="room-option" onclick="selectRoom(this, 'Deluxe', 15000)">
+                            <div class="room-header">
+                                <span class="room-name">Deluxe Room</span>
+                            </div>
+                            <p>Spacious room with premium amenities and beautiful garden or castle views.</p>
+                        </div> -->
+                        
+                        <!-- <div class="room-option" onclick="selectRoom(this, 'Suite', 25000)">
+                            <div class="room-header">
+                                <span class="room-name">Executive Suite</span>
+                                
+                            </div>
+                            <p>Luxurious suite with separate living area, perfect for extended stays.</p>
+                        </div> -->
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="closeBookingModal()">Cancel</button>
+                        <button class="book-btn" onclick="nextStep(2)" disabled id="next-step-1">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Guest Details -->
+                <div class="booking-form" id="form-step-2">
+                    <h3>Person Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" class="form-input" required id="first-name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" class="form-input" required id="last-name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-input" required id="email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-input" required id="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Special Requests</label>
+                        <textarea class="form-input" rows="3" placeholder="Any special requests or requirements..."></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="previousStep(1)">Previous</button>
+                        <button class="book-btn" onclick="nextStep(3)">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Booking Summary -->
+                <div class="booking-form" id="form-step-3">
+                    <h3></h3>
+                    <div class="booking-summary">
+                        <div class="summary-row">
+                            <span></span>
+                            <!-- <span id="summary-hotel">ANA Crowne Plaza Okayama</span> -->
+                        </div>
+                        <div class="summary-row">
+                            <span></span>
+                            <!-- <span id="summary-checkin">March 15, 2025</span> -->
+                        </div>
+                        <div class="summary-row">
+                            <span></span>
+                            <!-- <span id="summary-checkout">March 18, 2025</span> -->
+                        </div>
+                        <div class="summary-row">
+                            <span></span>
+                            <!-- <span id="summary-room">Deluxe Room</span> -->
+                        </div>
+                        <div class="summary-row">
+                            <span></span>
+                            <!-- <span id="summary-nights">3</span> -->
+                        </div>
+                        <div class="summary-row">
+                            <span>person:</span>
+                            <span id="summary-guests">2</span>
+                        </div>
+                        <div class="summary-row">
+                            <!-- <span>Room Rate:</span> -->
+                            
+                        </div>
+                        <div class="summary-row summary-total">
+                            <!-- <span>Total Amount:</span> -->
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="payment-section">
+                        <h4>Secure Payment</h4>
+                        <p>Your payment information is protected with industry-standard encryption.</p>
+                        <div class="payment-icons">
+                            <span>💳</span>
+                            <span>🔒</span>
+                            <span>🛡️</span>
+                        </div>
+                        <p><strong>Payment Integration Placeholder</strong></p>
+                        <p>Secure payment gateway would be integrated here with support for major credit cards, PayPal, and other payment methods.</p>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="previousStep(2)">Previous</button>
+                        <button class="book-btn" onclick="nextStep(4)">Confirm Booking</button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Confirmation -->
+                <div class="booking-form" id="form-step-4">
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+                        <h3>Booking Confirmed!</h3>
+                        <p>Thank you for your reservation. You will receive a confirmation email shortly.</p>
+                        
+                        <div style="background: var(--soft-cream); padding: 1.5rem; border-radius: var(--border-radius); margin: 2rem 0;">
+                            <h4>Booking Reference: OKA-2025-001</h4>
+                            <p>Confirmation email sent to: <span id="confirmation-email">guest@email.com</span></p>
+                            <p>Check-in instructions and hotel contact details will be provided in your confirmation email.</p>
+                        </div>
+                        
+                        <div class="btn-group" style="justify-content: center;">
+                            <button class="book-btn" onclick="closeBookingModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 data-translate="siteTitle">Discover Okayama</h4>
+                    <p>Your gateway to experiencing the beauty and culture of Okayama, Japan.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html#about" data-translate="aboutTitle">About</a></li>
+                        <li><a href="attractions.html" data-translate="attractionsTitle">Attractions</a></li>
+                        <li><a href="hotels.html" data-translate="bookBtn">Hotels</a></li>
+                        <li><a href="contact.html" data-translate="contactTitle">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 data-translate="language">Language</h4>
+                    <ul class="footer-links">
+                        <li><a href="?lang=en">English</a></li>
+                        <li><a href="?lang=ja">日本語</a></li>
+                        <li><a href="?lang=ne">नेपाली</a></li>
+                        <li><a href="?lang=my">မြန်မာ</a></li>
+                        <li><a href="?lang=vi">Tiếng Việt</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" aria-label="Facebook">Facebook</a></li>
+                        <li><a href="#" aria-label="Instagram">Instagram</a></li>
+                        <li><a href="#" aria-label="Twitter">Twitter</a></li>
+                        <li><a href="#" aria-label="YouTube">YouTube</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Discover Okayama. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer> -->
+     <footer class="footer">
+    <div class="footer-container">
+
+        <!-- Brand -->
+        <div class="footer-col">
+            <h4>Discover Okayama</h4>
+            <p>Your gateway to experiencing the beauty and culture of Okayama, Japan.</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+                <!-- THIS IS THE HOME LINK -->
+                <li><a href="index.html" data-translate="aboutTitle"><i class="fas fa-home"></i> Home</a></li>
+
+                <li><a href="#about"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="attractions.html"><i class="fas fa-map-marked-alt"></i> Attractions</a></li>
+                <li><a href="adventure.html"><i class="fas fa-mountain"></i> Adventure</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Social -->
+        <div class="footer-col">
+            <h4>Follow Us</h4>
+            <ul class="social-links">
+                <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fab fa-youtube"></i></a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 Discover Okayama. All rights reserved.</p>
+    </div>
+</footer>
+
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/adventure.js"></script>
+</body>
+</html>

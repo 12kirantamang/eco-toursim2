@@ -198,6 +198,7 @@
             width: 50%;
             box-sizing: border-box;
             display: flex;
+            flex-direction: column-reverse;
         }
 
         .left-panel {
@@ -229,6 +230,10 @@
             line-height: 1.6;
             font-size: 1rem;
             max-width: 500px;
+        }
+        .ties-container a {
+            color: #92ce23;
+            text-decoration: none;
         }
 
         .buttons-container {
@@ -362,7 +367,7 @@
         .card-content a:hover i {
             transform: translateX(5px);
         }
-
+        
         /* Footer */
         footer {
             background-color: #2e8b57;
