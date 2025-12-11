@@ -92,7 +92,7 @@
   //   bookNow: "Đặt Ngay",
   //   language: "Ngôn Ngữ"
   // }
-};
+// };
 
 // Current language
 let currentLang = 'en';
