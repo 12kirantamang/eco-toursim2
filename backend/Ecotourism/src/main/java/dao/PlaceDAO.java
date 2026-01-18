@@ -12,9 +12,8 @@ public class PlaceDAO {
         this.conn = conn;
     }
 
-    // Create
     public boolean addPlace(Place place) {
-        String sql = "INSERT INTO places (placeCode, placeName, description, pricePerPerson, status, createdAt) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO places (placeCode, placeName, description, pricePerPerson, status, createdAt, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, place.getPlaceCode());
             ps.setString(2, place.getPlaceName());
@@ -22,6 +21,7 @@ public class PlaceDAO {
             ps.setDouble(4, place.getPricePerPerson());
             ps.setString(5, place.getStatus());
             ps.setTimestamp(6, place.getCreatedAt());
+            ps.setString(7, place.getImageUrl()); // NEW: imageUrl
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -29,7 +29,6 @@ public class PlaceDAO {
         return false;
     }
 
-    // Read all
     public List<Place> getAllPlaces() {
         List<Place> places = new ArrayList<>();
         String sql = "SELECT * FROM places ORDER BY createdAt DESC";
@@ -45,6 +44,7 @@ public class PlaceDAO {
                 place.setPricePerPerson(rs.getDouble("pricePerPerson"));
                 place.setStatus(rs.getString("status"));
                 place.setCreatedAt(rs.getTimestamp("createdAt"));
+                place.setImageUrl(rs.getString("imageUrl")); // NEW
                 places.add(place);
             }
         } catch (SQLException e) {
@@ -53,7 +53,6 @@ public class PlaceDAO {
         return places;
     }
 
-    // Read by ID
     public Place getPlaceById(int id) {
         String sql = "SELECT * FROM places WHERE placeId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -68,6 +67,7 @@ public class PlaceDAO {
                 place.setPricePerPerson(rs.getDouble("pricePerPerson"));
                 place.setStatus(rs.getString("status"));
                 place.setCreatedAt(rs.getTimestamp("createdAt"));
+                place.setImageUrl(rs.getString("imageUrl")); // NEW
                 return place;
             }
         } catch (SQLException e) {
@@ -76,16 +76,16 @@ public class PlaceDAO {
         return null;
     }
 
-    // Update
     public boolean updatePlace(Place place) {
-        String sql = "UPDATE places SET placeCode=?, placeName=?, description=?, pricePerPerson=?, status=? WHERE placeId=?";
+        String sql = "UPDATE places SET placeCode=?, placeName=?, description=?, pricePerPerson=?, status=?, imageUrl=? WHERE placeId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, place.getPlaceCode());
             ps.setString(2, place.getPlaceName());
             ps.setString(3, place.getDescription());
             ps.setDouble(4, place.getPricePerPerson());
             ps.setString(5, place.getStatus());
-            ps.setInt(6, place.getPlaceId());
+            ps.setString(6, place.getImageUrl()); // NEW
+            ps.setInt(7, place.getPlaceId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,7 +93,6 @@ public class PlaceDAO {
         return false;
     }
 
-    // Delete
     public boolean deletePlace(int id) {
         String sql = "DELETE FROM places WHERE placeId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

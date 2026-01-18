@@ -75,6 +75,7 @@
                     <th class="p-2 border">Place ID</th>
                     <th class="p-2 border">Place Code</th>
                     <th class="p-2 border">Place Name</th>
+                    <th class="p-2 border">Image</th> <!-- NEW -->
                     <th class="p-2 border">Price Per Visitor</th>
                     <th class="p-2 border">Status</th>
                     <th class="p-2 border">Created At</th>
@@ -86,6 +87,14 @@
                         <td class="p-2 border">${place.placeId}</td>
                         <td class="p-2 border">${place.placeCode}</td>
                         <td class="p-2 border">${place.placeName}</td>
+                        <td class="p-2 border">
+                            <c:if test="${not empty place.imageUrl}">
+                                <img src="<c:url value='/assets/img/uploads/${place.imageUrl}' />" alt="${place.placeName}" class="h-16 w-16 object-cover rounded">
+                            </c:if>
+                            <c:if test="${empty place.imageUrl}">
+                                N/A
+                            </c:if>
+                        </td>
                         <td class="p-2 border">$${place.pricePerPerson}</td>
                         <td class="p-2 border">${place.status}</td>
                         <td class="p-2 border">${place.createdAt}</td>
@@ -95,6 +104,7 @@
         </table>
     </div>
 </section>
+
 
 <!-- Bookings Section -->
 <section class="bg-white p-4 rounded shadow">
