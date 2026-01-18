@@ -2,7 +2,8 @@ package controller;
 
 import dao.UserDAO;
 import model.User;
-import util.EmailUtil;
+import util.DBConnection;
+import util.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -16,7 +17,30 @@ public class AuthServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        userDAO = new UserDAO(); // Initialize DAO
+        try {
+            userDAO = new UserDAO(DBConnection.getConnection());
+        } catch (Exception e) {
+            throw new ServletException("Cannot initialize UserDAO", e);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+
+        if ("logout".equalsIgnoreCase(action)) {
+            // Invalidate session and redirect to home
+            HttpSession session = request.getSession(false); // avoid creating new
+            if (session != null) {
+                session.invalidate();
+            }
+            response.sendRedirect(request.getContextPath() + "/home");
+        } else {
+            // Default GET: redirect to login page
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        }
     }
 
     @Override
@@ -25,81 +49,79 @@ public class AuthServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        if ("login".equals(action)) {
-            handleLogin(request, response);
-        } else if ("register".equals(action)) {
-            handleRegister(request, response);
-        } else if ("logout".equals(action)) {
-            request.getSession().invalidate();
-            response.sendRedirect("home");
-        }else {
-            response.sendRedirect("index.jsp");
+        switch (action) {
+            case "login":
+                handleLogin(request, response);
+                break;
+            case "register":
+                handleRegister(request, response);
+                break;
+            default:
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
         }
     }
 
-    // -------------------------------
-    // LOGIN
-    // -------------------------------
     private void handleLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        User user = userDAO.login(email, password);
+        User user = userDAO.getUserByEmail(email);
 
         if (user != null) {
-            // Login successful → set session
-            HttpSession session = request.getSession();
-            session.setAttribute("user", user);
-
-            // Role-based redirect
-            switch (user.getRole()) {
-                case "ADMIN":
-                    response.sendRedirect("admin/dashboard.jsp");
-                    break;
-                case "VISITOR":
-                    response.sendRedirect("index.jsp");
-                    break;
-                default:
-                    response.sendRedirect("index.jsp");
+            if ("BLOCKED".equalsIgnoreCase(user.getStatus())) {
+                request.setAttribute("error", "Your account is blocked. Contact admin.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
             }
 
+            if (PasswordUtil.checkPassword(password, user.getPasswordHash())) {
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+
+                if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/index.jsp");
+                }
+            } else {
+                request.setAttribute("error", "Invalid email or password");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
         } else {
-            // Login failed
             request.setAttribute("error", "Invalid email or password");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 
-    // -------------------------------
-    // REGISTER
-    // -------------------------------
     private void handleRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String role = request.getParameter("role"); // ADMIN, VISITOR
+        String role = request.getParameter("role");
 
-        // Check if email already exists
         if (userDAO.isEmailExist(email)) {
             request.setAttribute("error", "Email already registered!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        User user = new User(name, email, password, role);
+        String hashedPassword = PasswordUtil.hashPassword(password);
 
-        boolean registered = userDAO.registerUser(user);
+        User user = new User();
+        user.setUserName(name);
+        user.setEmail(email);
+        user.setPasswordHash(hashedPassword);
+        user.setRole(role);
+        user.setStatus("ACTIVE");
+        user.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+
+        boolean registered = userDAO.addUser(user);
 
         if (registered) {
-        	// Send welcome email
-            String subject = "Welcome to EcoTourism Portal!";
-            String body = "Hi " + name + ",\n\nThank you for registering at EcoTourism Portal.\nEnjoy exploring our eco-friendly tours!\n\n- EcoTourism Team";
-            EmailUtil.sendEmail(email, subject, body);
-            
             request.setAttribute("success", "Registration successful! Please login.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {

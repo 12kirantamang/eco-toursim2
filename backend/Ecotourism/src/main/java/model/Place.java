@@ -11,14 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class User {
-    private int userId;
-    private String userName;
-    private String email;
-    private String passwordHash;
-    private String role;   // ADMIN or VISITOR
-    private String status; // ACTIVE or BLOCKED
+public class Place {
+    private int placeId;
+    private String placeCode;
+    private String placeName;
+    private String description;
+    private double pricePerPerson;
+    private String status; // ACTIVE, INACTIVE
     private Timestamp createdAt;
+
    
-    
 }

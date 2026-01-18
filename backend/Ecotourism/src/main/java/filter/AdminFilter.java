@@ -21,7 +21,7 @@ public class AdminFilter implements Filter {
 
         if (session == null || session.getAttribute("user") == null) {
             // Not logged in → redirect to login
-            res.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp");
+            res.sendRedirect(req.getContextPath() + "/login.jsp");
             return;
         }
 

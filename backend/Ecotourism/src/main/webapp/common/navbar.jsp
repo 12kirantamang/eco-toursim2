@@ -27,6 +27,20 @@
 		    <li><a href="<c:url value='/index.jsp#events' />" data-translate="eventsTitle">Events</a></li>
 		    
 		    <li><a href="<c:url value='/contact.jsp' />" data-translate="contactTitle">Contact</a></li>
+
+		    <c:choose>
+		        <c:when test="${empty sessionScope.user}">
+		            <li><a href="<c:url value='/login.jsp' />" data-translate="login">Login</a></li>
+		            <li><a href="<c:url value='/register.jsp' />" data-translate="register">Register</a></li>
+		        </c:when>
+		
+		        <c:otherwise>
+		            <li><a href="<c:url value='/auth?action=logout' />">Logout</a></li>
+		            <c:if test="${sessionScope.user.role eq 'ADMIN'}">
+		                <li><a href="<c:url value='/admin/dashboard.jsp' />">Dashboard</a></li>
+		            </c:if>
+		        </c:otherwise>
+		    </c:choose>
 		</ul>
         
         <!-- <div class="language-selector">

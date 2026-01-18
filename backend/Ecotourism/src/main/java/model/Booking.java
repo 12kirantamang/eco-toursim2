@@ -1,29 +1,25 @@
 package model;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class Booking {
     private int bookingId;
     private int userId;
-    private int tourId;
-    private Date bookingDate;
-    private String status; // BOOKED, CANCELLED
+    private LocalDate bookingDate; // YYYY-MM-DD
+    private String timeSlot;       // e.g., "09:00-11:00"
+    private int visitorCount;
+    private double totalAmount;
+    private Timestamp createdAt;
 
-    public Booking() {}
-
-    // Getters & Setters
-    public int getBookingId() { return bookingId; }
-    public void setBookingId(int bookingId) { this.bookingId = bookingId; }
-
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
-
-    public int getTourId() { return tourId; }
-    public void setTourId(int tourId) { this.tourId = tourId; }
-
-    public Date getBookingDate() { return bookingDate; }
-    public void setBookingDate(Date bookingDate) { this.bookingDate = bookingDate; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 }
