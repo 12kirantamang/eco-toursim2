@@ -63,7 +63,7 @@
         <div class="hotels-grid" id="hotels-grid">
             <!-- Hotel ANA Crowne Plaza -->
             <div class="hotel-card" data-category="luxury business" data-name="ANA Crowne Plaza">
-                <img src="<c:url value='/img/resources/hotel/Panoramic.png' />" alt="Panoramic Views" class="hotel-image">
+                <img src="<c:url value='/assets/img/resources/hotel/Panoramic.png' />" alt="Panoramic Views" class="hotel-image">
                 <div class="hotel-content">
                     <div class="hotel-header">
                         <h3 class="hotel-name">Panoramic Views from the Castle Keep</h3>
@@ -86,7 +86,7 @@
             
             <!-- Hotel Granvia Okayama -->
             <div class="hotel-card" data-category="luxury business" data-name="Hotel Granvia">
-                <img src="<c:url value='/img/resources/hotel/cycling.png' />" alt="Cycling" class="hotel-image">
+                <img src="<c:url value='/assets/img/resources/hotel/cycling.png' />" alt="Cycling" class="hotel-image">
                 <div class="hotel-content">
                     <div class="hotel-header">
                         <h3 class="hotel-name">Cycling and Walking along the River</h3>
@@ -109,7 +109,7 @@
             
             <!-- Okayama Koraku Hotel -->
             <div class="hotel-card" data-category="business budget" data-name="Koraku Hotel">
-                <img src="<c:url value='/img/resources/hotel/garden.png' />" alt="Exploring" class="hotel-image">
+                <img src="<c:url value='/assets/img/resources/hotel/garden.png' />" alt="Exploring" class="hotel-image">
                 <div class="hotel-content">
                     <div class="hotel-header">
                         <h3 class="hotel-name">Exploring Japan's Top Garden</h3>
@@ -131,7 +131,7 @@
             
             <!-- Tsurugata Ryokan -->
             <div class="hotel-card" data-category="ryokan luxury" data-name="Tsurugata Ryokan">
-                <img src="<c:url value='/img/resources/hotel/kimono.png' />" alt="Kimono" class="hotel-image">
+                <img src="<c:url value='/assets/img/resources/hotel/kimono.png' />" alt="Kimono" class="hotel-image">
                 <div class="hotel-content">
                     <div class="hotel-header">
                         <h3 class="hotel-name">Kimono</h3>

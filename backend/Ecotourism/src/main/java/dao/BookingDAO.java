@@ -1,87 +1,99 @@
 package dao;
 
 import model.Booking;
-import util.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookingDAO {
     private Connection conn;
 
-    public BookingDAO() {
-        conn = DBConnection.getConnection();
+    public BookingDAO(Connection conn) {
+        this.conn = conn;
     }
 
-    // Add booking
-    public boolean addBooking(Booking b) {
-        String sql = "INSERT INTO bookings (user_id, tour_id, booking_date, status) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, b.getUserId());
-            ps.setInt(2, b.getTourId());
-            ps.setDate(3, new java.sql.Date(b.getBookingDate().getTime()));
-            ps.setString(4, b.getStatus());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    // Add Booking
+    public boolean addBooking(Booking booking) {
+        String sql = "INSERT INTO bookings (userId, bookingDate, timeSlot, visitorCount, totalAmount, createdAt) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, booking.getUserId());
+            ps.setDate(2, Date.valueOf(booking.getBookingDate()));
+            ps.setString(3, booking.getTimeSlot());
+            ps.setInt(4, booking.getVisitorCount());
+            ps.setDouble(5, booking.getTotalAmount());
+            ps.setTimestamp(6, booking.getCreatedAt());
 
-    // Get bookings for a user
-    public List<Booking> getBookingsByUser(int userId) {
-        List<Booking> list = new ArrayList<>();
-        String sql = "SELECT * FROM bookings WHERE user_id=?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Booking b = new Booking();
-                b.setBookingId(rs.getInt("booking_id"));
-                b.setUserId(rs.getInt("user_id"));
-                b.setTourId(rs.getInt("tour_id"));
-                b.setBookingDate(rs.getDate("booking_date"));
-                b.setStatus(rs.getString("status"));
-                list.add(b);
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    booking.setBookingId(rs.getInt(1));
+                }
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+        return false;
     }
 
     // Get all bookings
     public List<Booking> getAllBookings() {
-        List<Booking> list = new ArrayList<>();
-        String sql = "SELECT * FROM bookings";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
+        List<Booking> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM bookings ORDER BY createdAt DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Booking b = new Booking();
-                b.setBookingId(rs.getInt("booking_id"));
-                b.setUserId(rs.getInt("user_id"));
-                b.setTourId(rs.getInt("tour_id"));
-                b.setBookingDate(rs.getDate("booking_date"));
-                b.setStatus(rs.getString("status"));
-                list.add(b);
+                Booking booking = new Booking();
+                booking.setBookingId(rs.getInt("bookingId"));
+                booking.setUserId(rs.getInt("userId"));
+                booking.setBookingDate(rs.getDate("bookingDate").toLocalDate());
+                booking.setTimeSlot(rs.getString("timeSlot"));
+                booking.setVisitorCount(rs.getInt("visitorCount"));
+                booking.setTotalAmount(rs.getDouble("totalAmount"));
+                booking.setCreatedAt(rs.getTimestamp("createdAt"));
+                bookings.add(booking);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+        return bookings;
     }
 
-    // Update booking status
-    public boolean updateBookingStatus(int bookingId, String status) {
-        String sql = "UPDATE bookings SET status=? WHERE booking_id=?";
+    // Get booking by ID
+    public Booking getBookingById(int id) {
+        String sql = "SELECT * FROM bookings WHERE bookingId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status);
-            ps.setInt(2, bookingId);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Booking booking = new Booking();
+                booking.setBookingId(rs.getInt("bookingId"));
+                booking.setUserId(rs.getInt("userId"));
+                booking.setBookingDate(rs.getDate("bookingDate").toLocalDate());
+                booking.setTimeSlot(rs.getString("timeSlot"));
+                booking.setVisitorCount(rs.getInt("visitorCount"));
+                booking.setTotalAmount(rs.getDouble("totalAmount"));
+                booking.setCreatedAt(rs.getTimestamp("createdAt"));
+                return booking;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Delete booking
+    public boolean deleteBooking(int id) {
+        String sql = "DELETE FROM bookings WHERE bookingId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 }
