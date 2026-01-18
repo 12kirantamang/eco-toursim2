@@ -121,25 +121,25 @@
         
         <div class="food-grid fade-in-up">
             <div class="food-card">
-                <img src="<c:url value='/img/resources/barazushi-dish.png' />" alt="Okayama Barazushi" class="food-image">
+                <img src="<c:url value='/assets/img/resources/barazushi-dish.png' />" alt="Okayama Barazushi" class="food-image">
                 <h3>Barazushi</h3>
                 <p>A colorful scattered sushi dish featuring fresh seafood and seasonal vegetables from the Seto Inland Sea.</p>
             </div>
             
             <div class="food-card">
-                <img src="<c:url value='/img/momo.png' />" alt="Okayama White Peaches" class="food-image">
+                <img src="<c:url value='/assets/img/momo.png' />" alt="Okayama White Peaches" class="food-image">
                 <h3>White Peaches</h3>
                 <p>Okayama's famous white peaches, known for their exceptional sweetness and delicate texture.</p>
             </div>
             
             <div class="food-card">
-                <img src="<c:url value='/img/kibi.png' />" alt="Kibi Dango" class="food-image">
+                <img src="<c:url value='/assets/img/kibi.png' />" alt="Kibi Dango" class="food-image">
                 <h3>Kibi Dango</h3>
                 <p>Traditional millet dumplings associated with the legend of Momotaro, the Peach Boy.</p>
             </div>
             
             <div class="food-card">
-                <img src="<c:url value='/img/Yakisoba.png' />" alt="Hiruzen Yakisoba" class="food-image">
+                <img src="<c:url value='/assets/img/Yakisoba.png' />" alt="Hiruzen Yakisoba" class="food-image">
                 <h3>Hiruzen Yakisoba</h3>
                 <p>Local stir-fried noodles with chicken, cabbage, and special miso sauce featuring apple and garlic.</p>
             </div>
