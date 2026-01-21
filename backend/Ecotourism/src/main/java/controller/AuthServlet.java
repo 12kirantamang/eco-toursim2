@@ -60,7 +60,7 @@ public class AuthServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
         }
     }
-
+    
     private void handleLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

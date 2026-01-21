@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/admin/dashboard")
-public class DashboardAdminServlet extends AdminBaseServlet {
+public class AdminDashboardServlet extends AdminBaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
