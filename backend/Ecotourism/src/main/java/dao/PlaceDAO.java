@@ -103,4 +103,93 @@ public class PlaceDAO {
         }
         return false;
     }
+    
+ // Get all active places (for public view)
+    public List<Place> getActivePlaces() {
+        List<Place> places = new ArrayList<>();
+        String sql = "SELECT * FROM places WHERE status=? ORDER BY createdAt DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "ACTIVE");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Place place = mapResultSetToPlace(rs);
+                    places.add(place);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return places;
+    }
+
+    // Search places by name (partial match, for admin or public search)
+    public List<Place> searchPlaces(String keyword) {
+        List<Place> places = new ArrayList<>();
+        String sql = "SELECT * FROM places WHERE placeName LIKE ? ORDER BY createdAt DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Place place = mapResultSetToPlace(rs);
+                    places.add(place);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return places;
+    }
+
+    // Soft delete a place (set status = INACTIVE)
+    public boolean softDeletePlace(int id) {
+        String sql = "UPDATE places SET status=? WHERE placeId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "INACTIVE");
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Restore a place (set status = ACTIVE)
+    public boolean restorePlace(int id) {
+        String sql = "UPDATE places SET status=? WHERE placeId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "ACTIVE");
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Count total places (for dashboard/admin stats)
+    public int countPlaces() {
+        String sql = "SELECT COUNT(*) FROM places";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Helper method to map ResultSet to Place object
+    private Place mapResultSetToPlace(ResultSet rs) throws SQLException {
+        Place place = new Place();
+        place.setPlaceId(rs.getInt("placeId"));
+        place.setPlaceCode(rs.getString("placeCode"));
+        place.setPlaceName(rs.getString("placeName"));
+        place.setDescription(rs.getString("description"));
+        place.setPricePerPerson(rs.getDouble("pricePerPerson"));
+        place.setStatus(rs.getString("status"));
+        place.setCreatedAt(rs.getTimestamp("createdAt"));
+        place.setImageUrl(rs.getString("imageUrl"));
+        return place;
+    }
+
 }

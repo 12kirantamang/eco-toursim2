@@ -8,52 +8,54 @@ import util.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.List;
 
-@WebServlet("/booking")
+@WebServlet("/bookings")
 public class BookingServlet extends HttpServlet {
+
+    private static final String LIST_JSP = "/user/booking_list.jsp";
+    private static final String FORM_JSP = "/user/booking_form.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        int userId = (int) session.getAttribute("userId");
+
         try (Connection conn = DBConnection.getConnection()) {
             BookingDAO bookingDAO = new BookingDAO(conn);
-            BookingPlaceDAO bookingPlaceDAO = new BookingPlaceDAO(conn);
+            // Get bookings for this user only
+            var bookings = bookingDAO.getBookingsByUserId(userId);
 
-            String action = request.getParameter("action");
-            if (action == null) action = "list";
+            request.setAttribute("bookings", bookings);
+            request.getRequestDispatcher(LIST_JSP).forward(request, response);
 
-            switch (action) {
-                case "delete":
-                    int id = Integer.parseInt(request.getParameter("id"));
-                    bookingDAO.deleteBooking(id);
-                    response.sendRedirect(request.getContextPath() + "/booking");
-                    break;
-
-                default:
-                    List<Booking> bookings = bookingDAO.getAllBookings();
-                    List<BookingPlace> bookingPlaces = bookingPlaceDAO.getAllBookingPlaces();
-                    request.setAttribute("bookings", bookings);
-                    request.setAttribute("bookingPlaces", bookingPlaces);
-                    request.getRequestDispatcher("admin/booking_list.jsp").forward(request, response);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+        } catch (Exception e) {
+            throw new ServletException("Failed to load your bookings", e);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        int userId = (int) session.getAttribute("userId");
 
         Connection conn = null;
         try {
@@ -63,15 +65,14 @@ public class BookingServlet extends HttpServlet {
             BookingDAO bookingDAO = new BookingDAO(conn);
             BookingPlaceDAO bookingPlaceDAO = new BookingPlaceDAO(conn);
 
-            // Read form
-            int userId = Integer.parseInt(request.getParameter("userId"));
+            // ---------- Read form ----------
             LocalDate bookingDate = LocalDate.parse(request.getParameter("bookingDate"));
             String timeSlot = request.getParameter("timeSlot");
             int visitorCount = Integer.parseInt(request.getParameter("visitorCount"));
             double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
-            String[] placeIds = request.getParameterValues("placeIds");
+            String[] placeIds = request.getParameterValues("placeIds"); // multi-select or checkboxes
 
-            // Create booking
+            // ---------- Create Booking ----------
             Booking booking = new Booking();
             booking.setUserId(userId);
             booking.setBookingDate(bookingDate);
@@ -80,41 +81,44 @@ public class BookingServlet extends HttpServlet {
             booking.setTotalAmount(totalAmount);
             booking.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
+            // Add booking and get generated bookingId
             boolean added = bookingDAO.addBooking(booking);
-            if (!added) throw new SQLException("Booking creation failed");
+            if (!added) {
+                throw new SQLException("Failed to create booking");
+            }
 
-            // Add booking places
+            // ---------- Add Booking Places ----------
             if (placeIds != null) {
                 for (String pid : placeIds) {
                     BookingPlace bp = new BookingPlace();
                     bp.setBookingId(booking.getBookingId());
                     bp.setPlaceId(Integer.parseInt(pid));
+
                     boolean bpAdded = bookingPlaceDAO.addBookingPlace(bp);
-                    if (!bpAdded)
-                        throw new SQLException("BookingPlace creation failed for placeId " + pid);
+                    if (!bpAdded) {
+                        throw new SQLException("Failed to add booking place: " + pid);
+                    }
                 }
             }
 
-            conn.commit(); // commit all if successful
-            response.sendRedirect(request.getContextPath() + "/booking");
+            // Commit transaction
+            conn.commit();
+            response.sendRedirect(request.getContextPath() + "/mybookings");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // Rollback if something goes wrong
             if (conn != null) {
-                try {
-                    conn.rollback(); // rollback all changes if any failure
-                    System.out.println("Transaction rolled back due to error");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             }
+
+            e.printStackTrace();
             request.setAttribute("error", "Booking failed: " + e.getMessage());
-            request.getRequestDispatcher("admin/booking_form.jsp").forward(request, response);
+            request.getRequestDispatcher(FORM_JSP).forward(request, response);
 
         } finally {
             if (conn != null) {
-                try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
-                try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+                try { conn.setAutoCommit(true); } catch (SQLException ignored) {}
+                try { conn.close(); } catch (SQLException ignored) {}
             }
         }
     }

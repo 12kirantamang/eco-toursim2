@@ -1,18 +1,19 @@
 package controller;
 
+import java.io.IOException;
+import java.sql.Connection;
 import dao.UserDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.User;
 import util.DBConnection;
 import util.PasswordUtil;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.util.List;
 
-@WebServlet("/user")
+@WebServlet("/users")
 public class UserServlet extends HttpServlet {
 
     private UserDAO userDAO;
@@ -27,74 +28,58 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
-        if (action == null) action = "list";
+        HttpSession session = req.getSession(false);
+        User loginUser = (User) session.getAttribute("user");
 
-        switch (action) {
-            case "add":
-                request.getRequestDispatcher("/userForm.jsp").forward(request, response);
-                break;
+        if (loginUser == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
 
-            case "edit":
-                int userId = Integer.parseInt(request.getParameter("userId"));
-                User user = userDAO.getUserById(userId);
-                request.setAttribute("user", user);
-                request.getRequestDispatcher("/userForm.jsp").forward(request, response);
-                break;
+        String action = req.getParameter("action");
+        if (action == null) action = "profile";
 
-            default: // list
-                List<User> users = userDAO.getAllUsers();
-                request.setAttribute("users", users);
-                request.getRequestDispatcher("/userList.jsp").forward(request, response);
-                break;
+        if ("profile".equals(action)) {
+            req.setAttribute("user", loginUser);
+            req.getRequestDispatcher("/userProfile.jsp").forward(req, resp);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+        HttpSession session = req.getSession(false);
+        User loginUser = (User) session.getAttribute("user");
 
-        if ("save".equals(action)) {
+        if (loginUser == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
 
-            int userId = request.getParameter("userId") == null || request.getParameter("userId").isEmpty()
-                    ? 0 : Integer.parseInt(request.getParameter("userId"));
+        String action = req.getParameter("action");
 
-            String userName = request.getParameter("userName");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password"); // plaintext from form
-            String role = request.getParameter("role");
-            String status = request.getParameter("status");
-            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+        if ("update".equals(action)) {
 
-            User user;
+            loginUser.setUserName(req.getParameter("userName"));
+            loginUser.setEmail(req.getParameter("email"));
 
-            if (userId == 0) {
-                // NEW USER → hash password
-                String hashedPassword = PasswordUtil.hashPassword(password);
-                user = new User(0, userName, email, hashedPassword, role, status, createdAt);
-                userDAO.addUser(user);
-            } else {
-                // EDIT USER → check if password is provided
-                User existingUser = userDAO.getUserById(userId);
-                String hashedPassword = (password == null || password.isEmpty())
-                        ? existingUser.getPasswordHash() // keep old password
-                        : PasswordUtil.hashPassword(password);     // new password
-                user = new User(userId, userName, email, hashedPassword, role, status, createdAt);
-                userDAO.updateUser(user);
+            String password = req.getParameter("password");
+            if (password != null && !password.isBlank()) {
+                loginUser.setPasswordHash(
+                        PasswordUtil.hashPassword(password)
+                );
             }
 
-            response.sendRedirect("users");
+            userDAO.updateUser(loginUser);
+            session.setAttribute("user", loginUser);
 
-        } else if ("delete".equals(action)) {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            userDAO.deleteUser(userId);
-            response.sendRedirect("users");
+            resp.sendRedirect("user?action=profile");
         }
     }
 }

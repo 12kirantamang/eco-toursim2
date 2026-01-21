@@ -21,9 +21,10 @@ public class BookingPlaceDAO {
             ps.setInt(2, bp.getPlaceId());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    bp.setBookingPlaceId(rs.getInt(1));
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        bp.setBookingPlaceId(rs.getInt(1));
+                    }
                 }
                 return true;
             }
@@ -40,11 +41,7 @@ public class BookingPlaceDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                BookingPlace bp = new BookingPlace();
-                bp.setBookingPlaceId(rs.getInt("bookingPlaceId"));
-                bp.setBookingId(rs.getInt("bookingId"));
-                bp.setPlaceId(rs.getInt("placeId"));
-                list.add(bp);
+                list.add(mapResultSetToBookingPlace(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -52,7 +49,24 @@ public class BookingPlaceDAO {
         return list;
     }
 
-    // Delete
+    // Get booking places by bookingId
+    public List<BookingPlace> getByBookingId(int bookingId) {
+        List<BookingPlace> list = new ArrayList<>();
+        String sql = "SELECT * FROM bookingplaces WHERE bookingId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToBookingPlace(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Delete by bookingPlaceId
     public boolean deleteBookingPlace(int id) {
         String sql = "DELETE FROM bookingplaces WHERE bookingPlaceId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -62,5 +76,27 @@ public class BookingPlaceDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Delete all places for a booking
+    public boolean deleteBookingPlacesByBookingId(int bookingId) {
+        String sql = "DELETE FROM bookingplaces WHERE bookingId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ------------------- Helper -------------------
+    private BookingPlace mapResultSetToBookingPlace(ResultSet rs) throws SQLException {
+        BookingPlace bp = new BookingPlace();
+        bp.setBookingPlaceId(rs.getInt("bookingPlaceId"));
+        bp.setBookingId(rs.getInt("bookingId"));
+        bp.setPlaceId(rs.getInt("placeId"));
+        return bp;
     }
 }
