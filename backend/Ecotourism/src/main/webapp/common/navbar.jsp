@@ -17,19 +17,16 @@
         <ul class="nav-links">
 		    <li><a href="<c:url value='/home' />" data-translate="homeTitle">Home</a></li>
 		    
-		    <li><a href="<c:url value='/index.jsp#about' />" data-translate="aboutTitle">About</a></li>
+		    <li><a href="<c:url value='/home#about' />" data-translate="aboutTitle">About</a></li>
 		    
-		    <li><a href="<c:url value='/attractions.jsp' />" data-translate="attractionsTitle">Attractions</a></li>
-		    
-		    <li><a href="<c:url value='/adventure.jsp' />" data-translate="adventureTitle">Adventure</a></li>
-		    
-		    <li><a href="<c:url value='/index.jsp#food' />" data-translate="foodTitle">Food</a></li>
-		    <li><a href="<c:url value='/index.jsp#events' />" data-translate="eventsTitle">Events</a></li>
+		    <li><a href="<c:url value='/places' />" data-translate="attractionsTitle">Attractions</a></li>
 		    
 		    <li><a href="<c:url value='/contact.jsp' />" data-translate="contactTitle">Contact</a></li>
 		    
-		    <!-- Book Now Link - Always visible -->
-		    <li><a href="<c:url value='/bookings?action=new' />" class="book-now-link"><i class="fas fa-ticket-alt"></i> Book Now</a></li>
+		    <!-- Book Now Link - Conditional visibility -->
+		    <c:if test="${not empty sessionScope.user && sessionScope.user.role == 'VISITOR'}">
+		        <li><a href="<c:url value='/bookings?action=new' />" class="book-now-link"><i class="fas fa-ticket-alt"></i> Book Now</a></li>
+		    </c:if>
 
 		    <c:choose>
 		        <c:when test="${empty sessionScope.user}">

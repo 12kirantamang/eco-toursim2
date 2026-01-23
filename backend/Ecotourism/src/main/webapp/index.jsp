@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <c:import url="/common/header.jsp" />
 <c:import url="/common/navbar.jsp" />
@@ -17,14 +18,22 @@
         <p class="hero-subtitle" data-translate="heroSubtitle">Where tradition meets modern charm in the Land of Sunshine</p>
         
         <div class="hero-buttons">
-            <a href="<c:url value='/attractions.jsp' />" class="btn btn-primary" data-translate="exploreBtn">
+            <a href="<c:url value='/places' />" class="btn btn-primary" data-translate="exploreBtn">
                 <span>🗾</span>
                 <span data-translate="exploreBtn">Explore Attractions</span>
             </a>
-            <!-- <a href="hotels.html" class="btn btn-secondary" data-translate="bookBtn">
-                <span>🏨</span>
-                <span data-translate="bookBtn">Book Hotels</span>
-            </a> -->
+            <c:if test="${not empty sessionScope.user && sessionScope.user.role == 'VISITOR'}">
+                <a href="<c:url value='/bookings?action=new' />" class="btn btn-secondary">
+                    <span>📅</span>
+                    <span>Book Now</span>
+                </a>
+            </c:if>
+            <c:if test="${empty sessionScope.user}">
+                <a href="<c:url value='/login.jsp' />" class="btn btn-secondary">
+                    <span>🔑</span>
+                    <span>Login to Book</span>
+                </a>
+            </c:if>
         </div>
     </div>
 </section>
@@ -68,45 +77,69 @@
         </div>
         
         <div class="grid grid-3 fade-in-up">
-            <div class="card">
-                <img src="https://kimi-web-img.moonshot.cn/img/okayama-castle.jp/f8f26d02ac7a4b0558ea3f395c811990e9cb30dd.jpg" alt="Okayama Castle" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Okayama Castle</h3>
-                    <p class="card-description">The iconic "Crow Castle" with its distinctive black exterior and rich history dating back to 1597.</p>
-                    <div class="card-meta">
-                        <span>🏯 Historical</span>
-                        <!-- <span>★★★★★</span> -->
+            <c:choose>
+                <c:when test="${not empty featuredPlaces}">
+                    <c:forEach var="place" items="${featuredPlaces}">
+                        <div class="card">
+                            <c:choose>
+                                <c:when test="${not empty place.imageUrl}">
+                                    <img src="<c:url value='/${place.imageUrl}' />" alt="${place.placeName}" class="card-image">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="<c:url value='/assets/img/placeholder.jpg' />" alt="${place.placeName}" class="card-image">
+                                </c:otherwise>
+                            </c:choose>
+                            <div class="card-content">
+                                <h3 class="card-title">${place.placeName}</h3>
+                                <p class="card-description">${place.description}</p>
+                                <div class="card-meta">
+                                    <span>💴 ¥<fmt:formatNumber value="${place.pricePerPerson}" pattern="#,##0.00" /></span>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <div class="card">
+                        <img src="https://kimi-web-img.moonshot.cn/img/okayama-castle.jp/f8f26d02ac7a4b0558ea3f395c811990e9cb30dd.jpg" alt="Okayama Castle" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Okayama Castle</h3>
+                            <p class="card-description">The iconic "Crow Castle" with its distinctive black exterior and rich history dating back to 1597.</p>
+                            <div class="card-meta">
+                                <span>🏯 Historical</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <img src="https://kimi-web-img.moonshot.cn/img/www.2aussietravellers.com/0bba775c81e3107cab70067d3c1d2658520a098a.jpg" alt="Korakuen Garden" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Korakuen Garden</h3>
-                    <p class="card-description">One of Japan's three most beautiful landscape gardens, featuring pristine lawns and tranquil ponds.</p>
-                    <div class="card-meta">
-                        <span>🌸 Nature</span>
-                        <!-- <span>★★★★★</span> -->
+                    
+                    <div class="card">
+                        <img src="https://kimi-web-img.moonshot.cn/img/www.2aussietravellers.com/0bba775c81e3107cab70067d3c1d2658520a098a.jpg" alt="Korakuen Garden" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Korakuen Garden</h3>
+                            <p class="card-description">One of Japan's three most beautiful landscape gardens, featuring pristine lawns and tranquil ponds.</p>
+                            <div class="card-meta">
+                                <span>🌸 Nature</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <img src="https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/1dace1457e86fbd60ebd3a435ea5365ba2af3ef7.jpg" alt="Kurashiki Bikan" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Kurashiki Bikan</h3>
-                    <p class="card-description">A preserved historical quarter with traditional architecture and charming canals.</p>
-                    <div class="card-meta">
-                        <span>🏘️ Cultural</span>
-                        <!-- <span>★★★★☆</span> -->
+                    
+                    <div class="card">
+                        <img src="https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/1dace1457e86fbd60ebd3a435ea5365ba2af3ef7.jpg" alt="Kurashiki Bikan" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Kurashiki Bikan</h3>
+                            <p class="card-description">A preserved historical quarter with traditional architecture and charming canals.</p>
+                            <div class="card-meta">
+                                <span>🏘️ Cultural</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
         
         <div style="text-align: center; margin-top: 3rem;">
-            <a href="<c:url value='/attractions.jsp' />" class="btn btn-primary" data-translate="viewAll">View All Attractions</a>
+            <a href="<c:url value='/places' />" class="btn btn-primary" data-translate="viewAll">
+                View All ${not empty totalPlaces ? totalPlaces : ''} Attractions
+            </a>
         </div>
     </div>
 </section>
@@ -142,58 +175,6 @@
                 <img src="<c:url value='/assets/img/Yakisoba.png' />" alt="Hiruzen Yakisoba" class="food-image">
                 <h3>Hiruzen Yakisoba</h3>
                 <p>Local stir-fried noodles with chicken, cabbage, and special miso sauce featuring apple and garlic.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Events Section -->
-<section id="events" class="section">
-    <div class="container">
-        <div class="section-header fade-in-up">
-            <h2 data-translate="eventsTitle">Upcoming Events</h2>
-            <p>Join in the celebration of Okayama's vibrant cultural festivals</p>
-        </div>
-        
-        <div class="splide events-carousel fade-in-up" id="events-carousel">
-            <div class="splide__track">
-                <ul class="splide__list">
-                    <li class="splide__slide">
-                        <div class="event-card">
-                            <div class="event-date">Mar 2025</div>
-                            <h3>Cherry Blossom Festival</h3>
-                            <p>Celebrate the arrival of spring with hanami parties in Korakuen Garden. Experience traditional tea ceremonies and cultural performances under blooming cherry trees.</p>
-                            <a href="#" class="btn btn-primary">RSVP</a>
-                        </div>
-                    </li>
-                    
-                    <li class="splide__slide">
-                        <div class="event-card">
-                            <div class="event-date">Jul 2025</div>
-                            <h3>Summer Fantasy Garden</h3>
-                            <p>Evening illumination event in Korakuen Garden with extended hours until 9:30 PM. Enjoy the magical atmosphere of traditional lanterns and modern lighting.</p>
-                            <a href="#" class="btn btn-primary">RSVP</a>
-                        </div>
-                    </li>
-                    
-                    <li class="splide__slide">
-                        <div class="event-card">
-                            <div class="event-date">Oct 2025</div>
-                            <h3>Autumn Moon Viewing</h3>
-                            <p>Traditional tsukimi ceremony celebrating the harvest moon. Experience Japanese cultural traditions with poetry readings and seasonal foods.</p>
-                            <a href="#" class="btn btn-primary">RSVP</a>
-                        </div>
-                    </li>
-                    
-                    <li class="splide__slide">
-                        <div class="event-card">
-                            <div class="event-date">Nov 2025</div>
-                            <h3>Chrysanthemum Convention</h3>
-                            <p>Annual chrysanthemum exhibition showcasing intricate floral arrangements and traditional Japanese gardening techniques.</p>
-                            <a href="#" class="btn btn-primary">RSVP</a>
-                        </div>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>

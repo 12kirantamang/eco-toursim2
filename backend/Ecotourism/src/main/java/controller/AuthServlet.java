@@ -23,9 +23,9 @@ public class AuthServlet extends HttpServlet {
         if ("logout".equalsIgnoreCase(action)) {
             HttpSession session = request.getSession(false);
             if (session != null) session.invalidate();
-            response.sendRedirect(request.getContextPath() + "/auth");
+            response.sendRedirect(request.getContextPath() + "/home");
         } else {
-            response.sendRedirect(request.getContextPath() + "/index.jsp");
+            response.sendRedirect(request.getContextPath() + "/home");
         }
     }
 
@@ -43,7 +43,7 @@ public class AuthServlet extends HttpServlet {
                 handleRegister(request, response);
                 break;
             default:
-                response.sendRedirect(request.getContextPath() + "/index.jsp");
+                response.sendRedirect(request.getContextPath() + "/home");
         }
     }
 
@@ -73,7 +73,7 @@ public class AuthServlet extends HttpServlet {
                     if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                         response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                     } else {
-                        response.sendRedirect(request.getContextPath() + "/index.jsp");
+                        response.sendRedirect(request.getContextPath() + "/home");
                     }
                 } else {
                     request.setAttribute("error", "Invalid email or password");

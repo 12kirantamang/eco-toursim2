@@ -29,7 +29,7 @@ public class AdminFilter implements Filter {
         User user = (User) session.getAttribute("user");
         if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
             // Not admin → redirect to home page or error page
-            res.sendRedirect(req.getContextPath() + "/index.jsp");
+            res.sendRedirect(req.getContextPath() + "/home");
             return;
         }
 
