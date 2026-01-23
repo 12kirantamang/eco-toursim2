@@ -27,6 +27,9 @@
 		    <li><a href="<c:url value='/index.jsp#events' />" data-translate="eventsTitle">Events</a></li>
 		    
 		    <li><a href="<c:url value='/contact.jsp' />" data-translate="contactTitle">Contact</a></li>
+		    
+		    <!-- Book Now Link - Always visible -->
+		    <li><a href="<c:url value='/bookings?action=new' />" class="book-now-link"><i class="fas fa-ticket-alt"></i> Book Now</a></li>
 
 		    <c:choose>
 		        <c:when test="${empty sessionScope.user}">
@@ -35,6 +38,7 @@
 		        </c:when>
 		
 		        <c:otherwise>
+		            <li><a href="<c:url value='/bookings' />"><i class="fas fa-calendar-check"></i> My Bookings</a></li>
 		            <li><a href="<c:url value='/auth?action=logout' />">Logout</a></li>
 		        </c:otherwise>
 		    </c:choose>

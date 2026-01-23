@@ -19,7 +19,11 @@
     <h1 class="text-xl font-bold">Admin Dashboard</h1>
     <nav>
         <ul class="flex space-x-4 items-center">
-            <li><span>Welcome, Admin</span></li>
+            <li><a href="<c:url value='/admin/dashboard' />" class="hover:text-blue-200">Dashboard</a></li>
+            <li><a href="<c:url value='/admin/places' />" class="hover:text-blue-200">Manage Places</a></li>
+            <li><a href="<c:url value='/admin/users' />" class="hover:text-blue-200">Manage Users</a></li>
+            <li><a href="<c:url value='/admin/bookings' />" class="hover:text-blue-200">Manage Bookings</a></li>
+            <li><span>Welcome, ${sessionScope.user.userName}</span></li>
             <li>
                 <a href="<c:url value='/auth?action=logout' />" 
                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
@@ -66,7 +70,13 @@
 
 <!-- Places Section -->
 <section class="bg-white p-4 rounded shadow">
-    <h2 class="text-lg font-semibold mb-4">Places</h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Places</h2>
+        <a href="<c:url value='/admin/places' />" 
+           class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm">
+            Manage Places →
+        </a>
+    </div>
     <input type="text" placeholder="Search Places..." onkeyup="filterTable('placesTable', this.value)" class="mb-2 p-2 border rounded w-full">
     <div class="table-container">
         <table class="min-w-full border border-gray-300" id="placesTable">
