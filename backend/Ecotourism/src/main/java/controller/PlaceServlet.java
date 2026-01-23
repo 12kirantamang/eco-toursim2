@@ -32,8 +32,8 @@ public class PlaceServlet extends HttpServlet {
                 int id = Integer.parseInt(idStr);
                 Place place = placeDAO.getPlaceById(id);
 
-                if (place == null || !"ACTIVE".equalsIgnoreCase(place.getStatus())) {
-                    // Redirect if place is inactive or not found
+                if (place == null || !"AVAILABLE".equalsIgnoreCase(place.getStatus())) {
+                    // Redirect if place is unavailable or not found
                     response.sendRedirect(request.getContextPath() + "/places");
                     return;
                 }

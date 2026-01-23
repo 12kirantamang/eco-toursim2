@@ -2,6 +2,7 @@ package controller;
 
 import dao.BookingDAO;
 import dao.BookingPlaceDAO;
+import model.Booking;
 import util.DBConnection;
 
 import jakarta.servlet.ServletException;
@@ -12,9 +13,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet("/admin/bookings")
-public class AdminBookingServlet extends HttpServlet {
+public class AdminBookingServlet extends AdminBaseServlet {
 
     private static final String ADMIN_BOOKINGS_JSP = "/admin/adminBookings.jsp";
 
@@ -26,10 +29,46 @@ public class AdminBookingServlet extends HttpServlet {
             BookingDAO bookingDAO = new BookingDAO(conn);
 
             // Fetch all bookings
-            List<?> bookings = bookingDAO.getAllBookings();
+            List<Booking> bookings = (List<Booking>) bookingDAO.getAllBookings();
 
-            // Set bookings list to request
+            // Calculate statistics
+            double totalRevenue = bookings.stream()
+                .mapToDouble(Booking::getTotalAmount)
+                .sum();
+            
+            int totalVisitors = bookings.stream()
+                .mapToInt(Booking::getVisitorCount)
+                .sum();
+            
+            double averageBooking = bookings.isEmpty() ? 0 : 
+                bookings.stream()
+                    .mapToDouble(Booking::getTotalAmount)
+                    .average()
+                    .orElse(0);
+            
+            double maxBooking = bookings.stream()
+                .mapToDouble(Booking::getTotalAmount)
+                .max()
+                .orElse(0);
+            
+            // Find most popular time slot
+            String popularTimeSlot = "N/A";
+            if (!bookings.isEmpty()) {
+                Map<String, Long> timeSlotCounts = bookings.stream()
+                    .collect(Collectors.groupingBy(Booking::getTimeSlot, Collectors.counting()));
+                popularTimeSlot = timeSlotCounts.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse("N/A");
+            }
+
+            // Set attributes
             request.setAttribute("bookings", bookings);
+            request.setAttribute("totalRevenue", totalRevenue);
+            request.setAttribute("totalVisitors", totalVisitors);
+            request.setAttribute("averageBooking", averageBooking);
+            request.setAttribute("maxBooking", maxBooking);
+            request.setAttribute("popularTimeSlot", popularTimeSlot);
 
             // Forward to admin bookings JSP
             request.getRequestDispatcher(ADMIN_BOOKINGS_JSP).forward(request, response);

@@ -25,8 +25,8 @@ import java.util.UUID;
 public class AdminPlaceServlet extends AdminBaseServlet {
 
     private static final String UPLOAD_DIR = "assets/img/uploads";
-    private static final String STATUS_ACTIVE = "ACTIVE";
-    private static final String STATUS_INACTIVE = "INACTIVE";
+    private static final String STATUS_ACTIVE = "AVAILABLE";
+    private static final String STATUS_INACTIVE = "UNAVAILABLE";
     private static final String REDIRECT_URL = "/admin/places";
 
     // ===== GET =====
