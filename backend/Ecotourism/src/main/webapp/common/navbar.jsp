@@ -36,9 +36,6 @@
 		
 		        <c:otherwise>
 		            <li><a href="<c:url value='/auth?action=logout' />">Logout</a></li>
-		            <c:if test="${sessionScope.user.role eq 'ADMIN'}">
-		                <li><a href="<c:url value='/admin/dashboard.jsp' />">Dashboard</a></li>
-		            </c:if>
 		        </c:otherwise>
 		    </c:choose>
 		</ul>
