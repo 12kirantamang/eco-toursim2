@@ -49,6 +49,23 @@ public class BookingPlaceDAO {
         return list;
     }
 
+    // Get booking places by booking ID
+    public List<BookingPlace> getBookingPlacesByBookingId(int bookingId) {
+        List<BookingPlace> list = new ArrayList<>();
+        String sql = "SELECT * FROM bookingplaces WHERE bookingId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToBookingPlace(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     // Get booking places by bookingId
     public List<BookingPlace> getByBookingId(int bookingId) {
         List<BookingPlace> list = new ArrayList<>();

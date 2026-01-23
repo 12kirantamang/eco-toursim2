@@ -109,7 +109,7 @@ public class PlaceDAO {
         List<Place> places = new ArrayList<>();
         String sql = "SELECT * FROM places WHERE status=? ORDER BY createdAt DESC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "ACTIVE");
+            ps.setString(1, "AVAILABLE");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Place place = mapResultSetToPlace(rs);
@@ -140,11 +140,11 @@ public class PlaceDAO {
         return places;
     }
 
-    // Soft delete a place (set status = INACTIVE)
+    // Soft delete a place (set status = UNAVAILABLE)
     public boolean softDeletePlace(int id) {
         String sql = "UPDATE places SET status=? WHERE placeId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "INACTIVE");
+            ps.setString(1, "UNAVAILABLE");
             ps.setInt(2, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -153,11 +153,11 @@ public class PlaceDAO {
         return false;
     }
 
-    // Restore a place (set status = ACTIVE)
+    // Restore a place (set status = AVAILABLE)
     public boolean restorePlace(int id) {
         String sql = "UPDATE places SET status=? WHERE placeId=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "ACTIVE");
+            ps.setString(1, "AVAILABLE");
             ps.setInt(2, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
