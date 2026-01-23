@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Booking {
     private int bookingId;
@@ -11,6 +12,7 @@ public class Booking {
     private int visitorCount;
     private double totalAmount;
     private Timestamp createdAt;
+    private List<Place> places;  // Associated places for this booking
 	public int getBookingId() {
 		return bookingId;
 	}
@@ -53,7 +55,11 @@ public class Booking {
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
-    
-    
+	public List<Place> getPlaces() {
+		return places;
+	}
+	public void setPlaces(List<Place> places) {
+		this.places = places;
+	}
 
 }
