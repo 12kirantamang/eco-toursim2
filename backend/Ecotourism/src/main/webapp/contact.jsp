@@ -1,5 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<c:set var="currentLocale" value="${sessionScope.locale != null ? sessionScope.locale : pageContext.request.locale}" />
+<fmt:setLocale value="${currentLocale}" />
+<fmt:setBundle basename="resources.messages" />
 
 <c:import url="/common/header.jsp" />
 <c:import url="/common/navbar.jsp" />
@@ -166,71 +171,71 @@
 
 <div class="contact-container">
     <div class="page-header">
-        <h1>Contact Us</h1>
-        <p>Get in touch with us for any inquiries about eco-tourism in Okayama</p>
+        <h1><fmt:message key="contact.title" /></h1>
+        <p><fmt:message key="contact.subtitle" /></p>
     </div>
     
-    <c:if test="${not empty success}">
+    <c:if test="${not empty param.success}">
         <div class="success-message">
-            <i class="fas fa-check-circle"></i> ${success}
+            <i class="fas fa-check-circle"></i> <fmt:message key="contact.success" />
         </div>
     </c:if>
     
-    <c:if test="${not empty error}">
+    <c:if test="${not empty param.error}">
         <div class="error-message" style="background: #f8d7da; color: #721c24; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #f5c6cb;">
-            <i class="fas fa-exclamation-circle"></i> ${error}
+            <i class="fas fa-exclamation-circle"></i> <fmt:message key="contact.error" />
         </div>
     </c:if>
     
     <div class="contact-content">
         <!-- Contact Form -->
         <div class="contact-form">
-            <h2 style="margin-bottom: 20px; color: #2c3e50;">Send us a Message</h2>
+            <h2 style="margin-bottom: 20px; color: #2c3e50;"><fmt:message key="contact.form.title" /></h2>
             <form action="<c:url value='/contact' />" method="post">
                 <div class="form-group">
                     <label for="name" class="form-label">
-                        <i class="fas fa-user"></i> Your Name *
+                        <i class="fas fa-user"></i> <fmt:message key="contact.form.name" /> *
                     </label>
-                    <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your name">
+                    <input type="text" id="name" name="name" class="form-control" required placeholder="">
                 </div>
                 
                 <div class="form-group">
                     <label for="email" class="form-label">
-                        <i class="fas fa-envelope"></i> Email Address *
+                        <i class="fas fa-envelope"></i> <fmt:message key="contact.form.email" /> *
                     </label>
-                    <input type="email" id="email" name="email" class="form-control" required placeholder="your.email@example.com">
+                    <input type="email" id="email" name="email" class="form-control" required placeholder="">
                 </div>
                 
                 <div class="form-group">
                     <label for="subject" class="form-label">
-                        <i class="fas fa-tag"></i> Subject *
+                        <i class="fas fa-tag"></i> <fmt:message key="contact.form.subject" /> *
                     </label>
-                    <input type="text" id="subject" name="subject" class="form-control" required placeholder="What is this about?">
+                    <input type="text" id="subject" name="subject" class="form-control" required placeholder="">
                 </div>
                 
                 <div class="form-group">
                     <label for="message" class="form-label">
-                        <i class="fas fa-comment"></i> Message *
+                        <i class="fas fa-comment"></i> <fmt:message key="contact.form.message" /> *
                     </label>
-                    <textarea id="message" name="message" class="form-control" required placeholder="Tell us more about your inquiry..."></textarea>
+                    <textarea id="message" name="message" class="form-control" required placeholder=""></textarea>
                 </div>
                 
                 <button type="submit" class="btn">
-                    <i class="fas fa-paper-plane"></i> Send Message
+                    <i class="fas fa-paper-plane"></i> <fmt:message key="contact.form.send" />
                 </button>
             </form>
         </div>
         
         <!-- Contact Information -->
         <div class="contact-info">
-            <h2 style="margin-bottom: 30px; color: #2c3e50;">Contact Information</h2>
+            <h2 style="margin-bottom: 30px; color: #2c3e50;"><fmt:message key="contact.info.title" /></h2>
             
             <div class="info-item">
                 <div class="info-icon">
                     <i class="fas fa-map-marker-alt"></i>
                 </div>
                 <div class="info-content">
-                    <h3>Address</h3>
+                    <h3><fmt:message key="contact.info.address" /></h3>
                     <p>Okayama Tourism Office<br>
                     2-1-1 Omote-cho, Kita-ku<br>
                     Okayama City, Okayama 700-0822<br>
@@ -243,7 +248,7 @@
                     <i class="fas fa-phone"></i>
                 </div>
                 <div class="info-content">
-                    <h3>Phone</h3>
+                    <h3><fmt:message key="contact.info.phone" /></h3>
                     <p>+81 86-803-1332<br>
                     Monday - Friday: 9:00 AM - 6:00 PM<br>
                     Saturday: 10:00 AM - 4:00 PM</p>
@@ -255,7 +260,7 @@
                     <i class="fas fa-envelope"></i>
                 </div>
                 <div class="info-content">
-                    <h3>Email</h3>
+                    <h3><fmt:message key="contact.info.email" /></h3>
                     <p>info@okayama-ecotourism.jp<br>
                     bookings@okayama-ecotourism.jp<br>
                     support@okayama-ecotourism.jp</p>
@@ -267,7 +272,7 @@
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="info-content">
-                    <h3>Business Hours</h3>
+                    <h3><fmt:message key="contact.info.hours" /></h3>
                     <p>Monday - Friday: 9:00 AM - 6:00 PM<br>
                     Saturday: 10:00 AM - 4:00 PM<br>
                     Sunday & Holidays: Closed</p>

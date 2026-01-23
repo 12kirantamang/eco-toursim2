@@ -2,6 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="currentLocale" value="${sessionScope.locale != null ? sessionScope.locale : pageContext.request.locale}" />
+<fmt:setLocale value="${currentLocale}" />
+<fmt:setBundle basename="resources.messages" />
+
 <c:import url="/common/header.jsp" />
 <c:import url="/common/navbar.jsp" />
 
@@ -128,16 +132,16 @@
 
 <div class="places-container">
     <div class="page-header">
-        <h1>Discover Okayama Attractions</h1>
-        <p>Explore the beautiful destinations available for your eco-tourism adventure</p>
+        <h1><fmt:message key="places.title" /></h1>
+        <p><fmt:message key="places.subtitle" /></p>
     </div>
     
     <c:choose>
         <c:when test="${empty places}">
             <div class="empty-state">
                 <i class="fas fa-map-marked-alt"></i>
-                <h2>No Attractions Available</h2>
-                <p>Check back soon for exciting places to visit!</p>
+                <h2><fmt:message key="places.empty.title" /></h2>
+                <p><fmt:message key="places.empty.subtitle" /></p>
             </div>
         </c:when>
         
@@ -163,12 +167,12 @@
                                 <div class="place-price">
                                     <i class="fas fa-yen-sign"></i>
                                     <fmt:formatNumber value="${place.pricePerPerson}" pattern="#,##0.00" />
-                                    <span style="font-size: 0.9rem; color: #7f8c8d;">/ person</span>
+                                    <span style="font-size: 0.9rem; color: #7f8c8d;"><fmt:message key="home.attractions.perPerson" /></span>
                                 </div>
                                 
                                 <c:if test="${not empty sessionScope.user && sessionScope.user.role == 'VISITOR'}">
                                     <a href="<c:url value='/bookings?action=new' />" class="btn btn-primary">
-                                        <i class="fas fa-calendar-check"></i> Book Now
+                                        <i class="fas fa-calendar-check"></i> <fmt:message key="places.bookNow" />
                                     </a>
                                 </c:if>
                             </div>

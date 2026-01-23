@@ -3,6 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="currentLocale" value="${sessionScope.locale != null ? sessionScope.locale : pageContext.request.locale}" />
+<fmt:setLocale value="${currentLocale}" />
+<fmt:setBundle basename="resources.messages" />
+
 <c:import url="/common/header.jsp" />
 <c:import url="/common/navbar.jsp" />
 
@@ -14,24 +18,24 @@
     <div class="hero-overlay" aria-hidden="true"></div>
     
     <div class="hero-content">
-        <h1 class="hero-title" data-translate="heroTitle">Experience the Beauty of Okayama</h1>
-        <p class="hero-subtitle" data-translate="heroSubtitle">Where tradition meets modern charm in the Land of Sunshine</p>
+        <h1 class="hero-title"><fmt:message key="home.hero.title" /></h1>
+        <p class="hero-subtitle"><fmt:message key="home.hero.subtitle" /></p>
         
         <div class="hero-buttons">
-            <a href="<c:url value='/places' />" class="btn btn-primary" data-translate="exploreBtn">
+            <a href="<c:url value='/places' />" class="btn btn-primary">
                 <span>🗾</span>
-                <span data-translate="exploreBtn">Explore Attractions</span>
+                <span><fmt:message key="home.hero.explore" /></span>
             </a>
             <c:if test="${not empty sessionScope.user && sessionScope.user.role == 'VISITOR'}">
                 <a href="<c:url value='/bookings?action=new' />" class="btn btn-secondary">
                     <span>📅</span>
-                    <span>Book Now</span>
+                    <span><fmt:message key="nav.bookNow" /></span>
                 </a>
             </c:if>
             <c:if test="${empty sessionScope.user}">
                 <a href="<c:url value='/login.jsp' />" class="btn btn-secondary">
                     <span>🔑</span>
-                    <span>Login to Book</span>
+                    <span><fmt:message key="home.hero.loginToBook" /></span>
                 </a>
             </c:if>
         </div>
@@ -42,8 +46,8 @@
 <section id="about" class="section">
     <div class="container">
         <div class="section-header fade-in-up">
-            <h2 data-translate="aboutTitle">About Okayama</h2>
-            <p data-translate="aboutText">Okayama, known as the 'Land of Sunshine,' is home to the iconic Crow Castle and stunning Korakuen Garden. This historic city seamlessly blends traditional Japanese culture with modern amenities, offering visitors an authentic experience of Japan's rich heritage.</p>
+            <h2><fmt:message key="home.about.title" /></h2>
+            <p><fmt:message key="home.about.description" /></p>
         </div>
         
         <div class="about-content fade-in-up">
@@ -72,8 +76,8 @@
 <section class="section attractions-preview">
     <div class="container">
         <div class="section-header fade-in-up">
-            <h2 data-translate="attractionsTitle">Must-Visit Attractions</h2>
-            <p>Discover the rich cultural heritage and natural beauty of Okayama</p>
+            <h2><fmt:message key="home.attractions.title" /></h2>
+            <p><fmt:message key="home.attractions.subtitle" /></p>
         </div>
         
         <div class="grid grid-3 fade-in-up">
@@ -137,8 +141,10 @@
         </div>
         
         <div style="text-align: center; margin-top: 3rem;">
-            <a href="<c:url value='/places' />" class="btn btn-primary" data-translate="viewAll">
-                View All ${not empty totalPlaces ? totalPlaces : ''} Attractions
+            <a href="<c:url value='/places' />" class="btn btn-primary">
+                <fmt:message key="home.attractions.viewAll">
+                    <fmt:param value="${not empty totalPlaces ? totalPlaces : ''}" />
+                </fmt:message>
             </a>
         </div>
     </div>
@@ -148,33 +154,33 @@
 <section id="food" class="section">
     <div class="container">
         <div class="section-header fade-in-up">
-            <h2 data-translate="foodTitle">Local Cuisine</h2>
-            <p>Taste the authentic flavors of Okayama's rich culinary heritage</p>
+            <h2><fmt:message key="home.food.title" /></h2>
+            <p><fmt:message key="home.food.subtitle" /></p>
         </div>
         
         <div class="food-grid fade-in-up">
             <div class="food-card">
                 <img src="<c:url value='/assets/img/resources/barazushi-dish.png' />" alt="Okayama Barazushi" class="food-image">
-                <h3>Barazushi</h3>
-                <p>A colorful scattered sushi dish featuring fresh seafood and seasonal vegetables from the Seto Inland Sea.</p>
+                <h3><fmt:message key="food.barazushi.title" /></h3>
+                <p><fmt:message key="food.barazushi.description" /></p>
             </div>
             
             <div class="food-card">
                 <img src="<c:url value='/assets/img/momo.png' />" alt="Okayama White Peaches" class="food-image">
-                <h3>White Peaches</h3>
-                <p>Okayama's famous white peaches, known for their exceptional sweetness and delicate texture.</p>
+                <h3><fmt:message key="food.whitePeaches.title" /></h3>
+                <p><fmt:message key="food.whitePeaches.description" /></p>
             </div>
             
             <div class="food-card">
                 <img src="<c:url value='/assets/img/kibi.png' />" alt="Kibi Dango" class="food-image">
-                <h3>Kibi Dango</h3>
-                <p>Traditional millet dumplings associated with the legend of Momotaro, the Peach Boy.</p>
+                <h3><fmt:message key="food.kibiDango.title" /></h3>
+                <p><fmt:message key="food.kibiDango.description" /></p>
             </div>
             
             <div class="food-card">
                 <img src="<c:url value='/assets/img/Yakisoba.png' />" alt="Hiruzen Yakisoba" class="food-image">
-                <h3>Hiruzen Yakisoba</h3>
-                <p>Local stir-fried noodles with chicken, cabbage, and special miso sauce featuring apple and garlic.</p>
+                <h3><fmt:message key="food.yakisoba.title" /></h3>
+                <p><fmt:message key="food.yakisoba.description" /></p>
             </div>
         </div>
     </div>
@@ -184,8 +190,8 @@
 <section class="section testimonials">
     <div class="container">
         <div class="section-header fade-in-up">
-            <h2 data-translate="testimonialsTitle">Traveler Reviews</h2>
-            <p>Hear what visitors say about their Okayama experience</p>
+            <h2><fmt:message key="home.testimonials.title" /></h2>
+            <p><fmt:message key="home.testimonials.subtitle" /></p>
         </div>
         
         <div class="grid grid-3 fade-in-up">
