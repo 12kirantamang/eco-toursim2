@@ -5,29 +5,13 @@ import java.sql.Connection;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import model.User;
 import util.DBConnection;
 import util.PasswordUtil;
 
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
-
-    private UserDAO userDAO;
-
-    @Override
-    public void init() throws ServletException {
-        try {
-            Connection connection = DBConnection.getConnection();
-            userDAO = new UserDAO(connection);
-        } catch (Exception e) {
-            throw new ServletException("Cannot initialize UserDAO", e);
-        }
-    }
-
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -65,21 +49,28 @@ public class UserServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         if ("update".equals(action)) {
+            try (Connection conn = DBConnection.getConnection()) { // fresh connection per request
+                UserDAO userDAO = new UserDAO(conn);
 
-            loginUser.setUserName(req.getParameter("userName"));
-            loginUser.setEmail(req.getParameter("email"));
+                loginUser.setUserName(req.getParameter("userName"));
+                loginUser.setEmail(req.getParameter("email"));
 
-            String password = req.getParameter("password");
-            if (password != null && !password.isBlank()) {
-                loginUser.setPasswordHash(
-                        PasswordUtil.hashPassword(password)
-                );
+                String password = req.getParameter("password");
+                if (password != null && !password.isBlank()) {
+                    loginUser.setPasswordHash(
+                            PasswordUtil.hashPassword(password)
+                    );
+                }
+
+                userDAO.updateUser(loginUser);
+                session.setAttribute("user", loginUser);
+
+                resp.sendRedirect("users?action=profile");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
             }
-
-            userDAO.updateUser(loginUser);
-            session.setAttribute("user", loginUser);
-
-            resp.sendRedirect("user?action=profile");
         }
     }
 }

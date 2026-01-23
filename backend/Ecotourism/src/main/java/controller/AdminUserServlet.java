@@ -17,18 +17,6 @@ import java.util.List;
 @WebServlet("/admin/users")
 public class AdminUserServlet extends AdminBaseServlet {
 
-    private UserDAO userDAO;
-
-    @Override
-    public void init() throws ServletException {
-        try {
-            Connection connection = DBConnection.getConnection();
-            userDAO = new UserDAO(connection);
-        } catch (Exception e) {
-            throw new ServletException("Cannot initialize UserDAO", e);
-        }
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -36,18 +24,25 @@ public class AdminUserServlet extends AdminBaseServlet {
         String action = req.getParameter("action");
         if (action == null) action = "list";
 
-        switch (action) {
-            case "new":
-                showNewForm(req, resp);
-                break;
-            case "edit":
-                showEditForm(req, resp);
-                break;
-            case "delete":
-                deleteUser(req, resp);
-                break;
-            default:
-                listUsers(req, resp);
+        try (Connection conn = DBConnection.getConnection()) { // fresh connection per request
+            UserDAO userDAO = new UserDAO(conn);
+
+            switch (action) {
+                case "new":
+                    showNewForm(req, resp);
+                    break;
+                case "edit":
+                    showEditForm(req, resp, userDAO);
+                    break;
+                case "delete":
+                    deleteUser(req, resp, userDAO);
+                    break;
+                default:
+                    listUsers(req, resp, userDAO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
     }
 
@@ -57,16 +52,23 @@ public class AdminUserServlet extends AdminBaseServlet {
 
         String action = req.getParameter("action");
 
-        if ("insert".equals(action)) {
-            insertUser(req, resp);
-        } else if ("update".equals(action)) {
-            updateUser(req, resp);
+        try (Connection conn = DBConnection.getConnection()) {
+            UserDAO userDAO = new UserDAO(conn);
+
+            if ("insert".equals(action)) {
+                insertUser(req, resp, userDAO);
+            } else if ("update".equals(action)) {
+                updateUser(req, resp, userDAO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
     }
 
     // ===== METHODS =====
 
-    private void listUsers(HttpServletRequest req, HttpServletResponse resp)
+    private void listUsers(HttpServletRequest req, HttpServletResponse resp, UserDAO userDAO)
             throws ServletException, IOException {
 
         List<User> users = userDAO.getAllUsers();
@@ -80,7 +82,7 @@ public class AdminUserServlet extends AdminBaseServlet {
         req.getRequestDispatcher("/admin/user-form.jsp").forward(req, resp);
     }
 
-    private void showEditForm(HttpServletRequest req, HttpServletResponse resp)
+    private void showEditForm(HttpServletRequest req, HttpServletResponse resp, UserDAO userDAO)
             throws ServletException, IOException {
 
         int userId = Integer.parseInt(req.getParameter("id"));
@@ -90,7 +92,7 @@ public class AdminUserServlet extends AdminBaseServlet {
         req.getRequestDispatcher("/admin/user-form.jsp").forward(req, resp);
     }
 
-    private void insertUser(HttpServletRequest req, HttpServletResponse resp)
+    private void insertUser(HttpServletRequest req, HttpServletResponse resp, UserDAO userDAO)
             throws IOException {
 
         User user = new User();
@@ -107,7 +109,7 @@ public class AdminUserServlet extends AdminBaseServlet {
         resp.sendRedirect(req.getContextPath() + "/admin/users");
     }
 
-    private void updateUser(HttpServletRequest req, HttpServletResponse resp)
+    private void updateUser(HttpServletRequest req, HttpServletResponse resp, UserDAO userDAO)
             throws IOException {
 
         int userId = Integer.parseInt(req.getParameter("userId"));
@@ -127,7 +129,7 @@ public class AdminUserServlet extends AdminBaseServlet {
         resp.sendRedirect(req.getContextPath() + "/admin/users");
     }
 
-    private void deleteUser(HttpServletRequest req, HttpServletResponse resp)
+    private void deleteUser(HttpServletRequest req, HttpServletResponse resp, UserDAO userDAO)
             throws IOException {
 
         int userId = Integer.parseInt(req.getParameter("id"));

@@ -11,6 +11,7 @@ import jakarta.servlet.http.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
@@ -23,16 +24,10 @@ import java.util.UUID;
 )
 public class AdminPlaceServlet extends AdminBaseServlet {
 
-    private PlaceDAO placeDAO;
     private static final String UPLOAD_DIR = "assets/img/uploads";
     private static final String STATUS_ACTIVE = "ACTIVE";
     private static final String STATUS_INACTIVE = "INACTIVE";
     private static final String REDIRECT_URL = "/admin/places";
-
-    @Override
-    public void init() throws ServletException {
-        placeDAO = new PlaceDAO(DBConnection.getConnection());
-    }
 
     // ===== GET =====
     @Override
@@ -42,21 +37,29 @@ public class AdminPlaceServlet extends AdminBaseServlet {
         String action = req.getParameter("action");
         if (action == null) action = "list";
 
-        switch (action) {
-            case "add":
-                req.getRequestDispatcher("/admin/place_form.jsp").forward(req, resp);
-                break;
+        try (Connection conn = DBConnection.getConnection()) {
+            PlaceDAO placeDAO = new PlaceDAO(conn);
 
-            case "edit":
-                showEditForm(req, resp);
-                break;
+            switch (action) {
+                case "add":
+                    req.getRequestDispatcher("/admin/place_form.jsp").forward(req, resp);
+                    break;
 
-            case "delete":
-                softDelete(req, resp);
-                break;
+                case "edit":
+                    showEditForm(req, resp, placeDAO);
+                    break;
 
-            default:
-                listPlaces(req, resp);
+                case "delete":
+                    softDelete(req, resp, placeDAO);
+                    break;
+
+                default:
+                    listPlaces(req, resp, placeDAO);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
     }
 
@@ -65,53 +68,61 @@ public class AdminPlaceServlet extends AdminBaseServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Place place;
-        String placeIdStr = req.getParameter("placeId");
+        try (Connection conn = DBConnection.getConnection()) {
+            PlaceDAO placeDAO = new PlaceDAO(conn);
 
-        if (placeIdStr == null || placeIdStr.isEmpty()) {
-            place = new Place();
-            place.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        } else {
-            int placeId = parseInt(placeIdStr, 0);
-            place = placeDAO.getPlaceById(placeId);
-            if (place == null) {
-                resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
-                return;
+            Place place;
+            String placeIdStr = req.getParameter("placeId");
+
+            if (placeIdStr == null || placeIdStr.isEmpty()) {
+                place = new Place();
+                place.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            } else {
+                int placeId = parseInt(placeIdStr, 0);
+                place = placeDAO.getPlaceById(placeId);
+                if (place == null) {
+                    resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
+                    return;
+                }
             }
+
+            // ===== Set values =====
+            place.setPlaceCode(trim(req.getParameter("placeCode")));
+            place.setPlaceName(trim(req.getParameter("placeName")));
+            place.setDescription(trim(req.getParameter("description")));
+            place.setPricePerPerson(parseDouble(req.getParameter("pricePerPerson"), 0));
+            place.setStatus(trim(req.getParameter("status")));
+
+            // ===== Handle file upload =====
+            String uploadedImage = handleUpload(req);
+            if (uploadedImage != null) {
+                place.setImageUrl(uploadedImage);
+            }
+
+            // ===== Save to DB =====
+            if (placeIdStr == null || placeIdStr.isEmpty()) {
+                placeDAO.addPlace(place);
+            } else {
+                placeDAO.updatePlace(place);
+            }
+
+            resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
-
-        // ===== Set values =====
-        place.setPlaceCode(trim(req.getParameter("placeCode")));
-        place.setPlaceName(trim(req.getParameter("placeName")));
-        place.setDescription(trim(req.getParameter("description")));
-        place.setPricePerPerson(parseDouble(req.getParameter("pricePerPerson"), 0));
-        place.setStatus(trim(req.getParameter("status")));
-
-        // ===== Handle file upload =====
-        String uploadedImage = handleUpload(req);
-        if (uploadedImage != null) {
-            place.setImageUrl(uploadedImage);
-        }
-
-        // ===== Save to DB =====
-        if (placeIdStr == null || placeIdStr.isEmpty()) {
-            placeDAO.addPlace(place);
-        } else {
-            placeDAO.updatePlace(place);
-        }
-
-        resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
     }
 
     // ===== METHODS =====
-    private void listPlaces(HttpServletRequest req, HttpServletResponse resp)
+    private void listPlaces(HttpServletRequest req, HttpServletResponse resp, PlaceDAO placeDAO)
             throws ServletException, IOException {
         List<Place> places = placeDAO.getAllPlaces();
         req.setAttribute("places", places);
         req.getRequestDispatcher("/admin/place_list.jsp").forward(req, resp);
     }
 
-    private void showEditForm(HttpServletRequest req, HttpServletResponse resp)
+    private void showEditForm(HttpServletRequest req, HttpServletResponse resp, PlaceDAO placeDAO)
             throws ServletException, IOException {
         int id = parseInt(req.getParameter("id"), 0);
         Place place = placeDAO.getPlaceById(id);
@@ -123,7 +134,7 @@ public class AdminPlaceServlet extends AdminBaseServlet {
         req.getRequestDispatcher("/admin/place_form.jsp").forward(req, resp);
     }
 
-    private void softDelete(HttpServletRequest req, HttpServletResponse resp)
+    private void softDelete(HttpServletRequest req, HttpServletResponse resp, PlaceDAO placeDAO)
             throws IOException {
         int id = parseInt(req.getParameter("id"), 0);
         Place place = placeDAO.getPlaceById(id);
@@ -147,23 +158,15 @@ public class AdminPlaceServlet extends AdminBaseServlet {
 
             return UPLOAD_DIR + "/" + fileName;
         }
-        return null; // no upload
+        return null;
     }
 
     private int parseInt(String str, int defaultVal) {
-        try {
-            return Integer.parseInt(str.trim());
-        } catch (Exception e) {
-            return defaultVal;
-        }
+        try { return Integer.parseInt(str.trim()); } catch (Exception e) { return defaultVal; }
     }
 
     private double parseDouble(String str, double defaultVal) {
-        try {
-            return Double.parseDouble(str.trim());
-        } catch (Exception e) {
-            return defaultVal;
-        }
+        try { return Double.parseDouble(str.trim()); } catch (Exception e) { return defaultVal; }
     }
 
     private String trim(String str) {
