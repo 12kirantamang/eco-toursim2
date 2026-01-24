@@ -52,14 +52,14 @@
         
         <div class="about-content fade-in-up">
             <div class="about-text">
-                <h3>A City of History and Beauty</h3>
-                <p>Okayama Castle, famously known as "Crow Castle" due to its distinctive black exterior, stands as a testament to Japan's feudal era. Built in 1597, the castle offers panoramic views of the city and houses fascinating exhibits about samurai culture.</p>
+                <h3><fmt:message key="home.about.section1.title" /></h3>
+                <p><fmt:message key="home.about.section1.content" /></p>
                 
-                <h3>Garden Paradise</h3>
-                <p>Adjacent to the castle lies Korakuen Garden, one of Japan's three most beautiful landscape gardens. Created in 1700, this expansive garden features pristine lawns, tranquil ponds, and traditional tea houses.</p>
+                <h3><fmt:message key="home.about.section2.title" /></h3>
+                <p><fmt:message key="home.about.section2.content" /></p>
                 
-                <h3>Modern Comforts</h3>
-                <p>Today, Okayama offers world-class accommodations, exceptional dining experiences, and easy access to major transportation hubs, making it the perfect base for exploring Western Japan.</p>
+                <h3><fmt:message key="home.about.section3.title" /></h3>
+                <p><fmt:message key="home.about.section3.content" /></p>
             </div>
             
             <div class="about-gallery">
