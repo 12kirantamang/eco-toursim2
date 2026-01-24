@@ -43,9 +43,10 @@
 
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 font-semibold mb-2"><fmt:message key="register.password" /></label>
-                <input type="password" name="password" id="password" placeholder=""
-                       class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       required>
+                  <input type="password" name="password" id="password" placeholder=""
+                      class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      minlength="6"
+                      required>
             </div>
 
             <div class="mb-4">
@@ -78,6 +79,12 @@
 
             if (!name || !email || !password) {
                 alert('Please fill in all fields.');
+                e.preventDefault();
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
                 e.preventDefault();
             }
         });
