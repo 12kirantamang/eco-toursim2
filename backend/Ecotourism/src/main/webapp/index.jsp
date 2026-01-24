@@ -19,7 +19,7 @@
     
     <div class="hero-content">
         <h1 class="hero-title"><fmt:message key="home.hero.title" /></h1>
-        <p class="hero-subtitle"><fmt:message key="home.hero.subtitle" /></p>
+        <h6 class="hero-subtitle"><fmt:message key="home.hero.subtitle" /></h6>
         
         <div class="hero-buttons">
             <a href="<c:url value='/places' />" class="btn btn-primary">

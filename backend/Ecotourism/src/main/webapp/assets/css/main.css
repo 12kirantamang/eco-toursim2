@@ -8,7 +8,7 @@
   --soft-cream: #F5F3F0;
   --coral-pink: #E8A598;
   --warm-gold: #D4A574;
-  --primary-text: #2C2C2C;
+  --primary-text: #0fa0bd;
   --secondary-text: #5A5A5A;
   --light-text: #FFFFFF;
   
@@ -70,7 +70,7 @@ h2 { font-size: 2.5rem; }
 h3 { font-size: 1.5rem; }
 h4 { font-size: 1.25rem; }
 h5 { font-size: 1.125rem; }
-h6 { font-size: 1rem; }
+h6 { font-size: 1rem; color: var(--light-text); }
 
 p {
   margin-bottom: 1rem;
