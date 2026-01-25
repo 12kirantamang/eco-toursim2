@@ -90,6 +90,29 @@ public class BookingPlaceDAO {
         }
         return false;
     }
+    
+    public List<BookingPlace> getBookingPlacesByBookingId(int bookingId) throws SQLException {
+        List<BookingPlace> list = new ArrayList<>();
+        String sql = "SELECT bp.booking_place_id, bp.booking_id, p.place_id, p.placeName, p.pricePerPerson " +
+                     "FROM booking_places bp JOIN places p ON bp.place_id = p.placeId " +
+                     "WHERE bp.booking_id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                BookingPlace bp = new BookingPlace();
+                bp.setBookingPlaceId(rs.getInt("booking_place_id"));
+                bp.setBookingId(rs.getInt("booking_id"));
+                bp.setPlaceId(rs.getInt("place_id"));
+                bp.setPlaceName(rs.getString("placeName"));
+                bp.setPricePerPerson(rs.getDouble("pricePerPerson"));
+                list.add(bp);
+            }
+        }
+        return list;
+    }
+
 
     // ------------------- Helper -------------------
     private BookingPlace mapResultSetToBookingPlace(ResultSet rs) throws SQLException {

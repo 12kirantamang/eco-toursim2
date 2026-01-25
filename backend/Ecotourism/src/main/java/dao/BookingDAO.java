@@ -1,6 +1,7 @@
 package dao;
 
 import model.Booking;
+import model.BookingPlace;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -159,6 +160,18 @@ public class BookingDAO {
         }
         return bookings;
     }
+    
+    // Get all bookings with their places
+    public List<Booking> getAllBookingsWithPlaces() throws SQLException {
+        List<Booking> bookings = getAllBookings();
+        BookingPlaceDAO bpDAO = new BookingPlaceDAO(conn);
+
+        for (Booking b : bookings) {
+            List<BookingPlace> places = bpDAO.getBookingPlacesByBookingId(b.getBookingId());
+            b.setBookingPlaces(places);
+        }
+        return bookings;
+    }
 
     // ------------------- Helper Method -------------------
     private Booking mapResultSetToBooking(ResultSet rs) throws SQLException {
@@ -170,8 +183,28 @@ public class BookingDAO {
         booking.setVisitorCount(rs.getInt("visitorCount"));
         booking.setTotalAmount(rs.getDouble("totalAmount"));
         booking.setCreatedAt(rs.getTimestamp("createdAt"));
+        booking.setUserName(getUserNameById(booking.getUserId()));
+
         return booking;
     }
+    
+    // Inside BookingDAO
+    public String getUserNameById(int userId) {
+        String sql = "SELECT userName FROM users WHERE userId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("userName");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // return null if not found
+    }
+
+    
 }
 
 
