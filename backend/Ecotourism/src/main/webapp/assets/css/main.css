@@ -3,7 +3,7 @@
 /* CSS Variables for Design System */
 :root {
   /* Colors */
-  --stone-gray: #8B7D6B;
+  --stone-gray: #d6a360;
   --forest-green: #2D5016;
   --soft-cream: #F5F3F0;
   --coral-pink: #E8A598;
@@ -617,7 +617,7 @@ p {
 }
 
 .footer-col ul li a {
-    color: #ccc;
+    color: var(--secondary-text);
     text-decoration: none;
     transition: 0.3s ease;
     display: flex;
@@ -663,7 +663,7 @@ p {
     padding-top: 2rem;
     border-top: 1px solid #333;
     margin-top: 2rem;
-    font-size: 0.9rem;
+    font-size: 1.0rem;
 }
 
 
