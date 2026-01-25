@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.UUID;
 
 @WebServlet("/admin/places")
@@ -25,48 +24,15 @@ import java.util.UUID;
 public class AdminPlaceServlet extends AdminBaseServlet {
 
     private static final String UPLOAD_DIR = "assets/img/uploads";
-    private static final String STATUS_ACTIVE = "ACTIVE";
-    private static final String STATUS_INACTIVE = "INACTIVE";
-    private static final String REDIRECT_URL = "/admin/places";
 
-    // ===== GET =====
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        String action = req.getParameter("action");
-        if (action == null) action = "list";
-
-        try (Connection conn = DBConnection.getConnection()) {
-            PlaceDAO placeDAO = new PlaceDAO(conn);
-
-            switch (action) {
-                case "add":
-                    req.getRequestDispatcher("/admin/place_form.jsp").forward(req, resp);
-                    break;
-
-                case "edit":
-                    showEditForm(req, resp, placeDAO);
-                    break;
-
-                case "delete":
-                    softDelete(req, resp, placeDAO);
-                    break;
-
-                default:
-                    listPlaces(req, resp, placeDAO);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
-        }
-    }
-
-    // ===== POST =====
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        // Optional: redirect to a specific dashboard section
+        String redirectSection = req.getParameter("redirectSection");
+        if (redirectSection == null) redirectSection = "";
+        else redirectSection = "#" + redirectSection;
 
         try (Connection conn = DBConnection.getConnection()) {
             PlaceDAO placeDAO = new PlaceDAO(conn);
@@ -75,18 +41,20 @@ public class AdminPlaceServlet extends AdminBaseServlet {
             String placeIdStr = req.getParameter("placeId");
 
             if (placeIdStr == null || placeIdStr.isEmpty()) {
+                // ADD new place
                 place = new Place();
                 place.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             } else {
+                // UPDATE existing place
                 int placeId = parseInt(placeIdStr, 0);
                 place = placeDAO.getPlaceById(placeId);
                 if (place == null) {
-                    resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
+                    resp.sendRedirect(req.getContextPath() + "/admin/dashboard" + redirectSection);
                     return;
                 }
             }
 
-            // ===== Set values =====
+            // ===== Set values from form =====
             place.setPlaceCode(trim(req.getParameter("placeCode")));
             place.setPlaceName(trim(req.getParameter("placeName")));
             place.setDescription(trim(req.getParameter("description")));
@@ -106,43 +74,13 @@ public class AdminPlaceServlet extends AdminBaseServlet {
                 placeDAO.updatePlace(place);
             }
 
-            resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
+            // ===== Redirect to dashboard with optional section =====
+            resp.sendRedirect(req.getContextPath() + "/admin/dashboard" + redirectSection);
 
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
-    }
-
-    // ===== METHODS =====
-    private void listPlaces(HttpServletRequest req, HttpServletResponse resp, PlaceDAO placeDAO)
-            throws ServletException, IOException {
-        List<Place> places = placeDAO.getAllPlaces();
-        req.setAttribute("places", places);
-        req.getRequestDispatcher("/admin/place_list.jsp").forward(req, resp);
-    }
-
-    private void showEditForm(HttpServletRequest req, HttpServletResponse resp, PlaceDAO placeDAO)
-            throws ServletException, IOException {
-        int id = parseInt(req.getParameter("id"), 0);
-        Place place = placeDAO.getPlaceById(id);
-        if (place == null) {
-            resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
-            return;
-        }
-        req.setAttribute("place", place);
-        req.getRequestDispatcher("/admin/place_form.jsp").forward(req, resp);
-    }
-
-    private void softDelete(HttpServletRequest req, HttpServletResponse resp, PlaceDAO placeDAO)
-            throws IOException {
-        int id = parseInt(req.getParameter("id"), 0);
-        Place place = placeDAO.getPlaceById(id);
-        if (place != null) {
-            place.setStatus(STATUS_INACTIVE);
-            placeDAO.updatePlace(place);
-        }
-        resp.sendRedirect(req.getContextPath() + REDIRECT_URL);
     }
 
     // ===== Helper Methods =====
@@ -151,7 +89,7 @@ public class AdminPlaceServlet extends AdminBaseServlet {
         if (filePart != null && filePart.getSize() > 0) {
             String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
             File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdir();
+            if (!uploadDir.exists()) uploadDir.mkdirs(); // safer
 
             String fileName = UUID.randomUUID() + "_" + new File(filePart.getSubmittedFileName()).getName();
             filePart.write(uploadPath + File.separator + fileName);
