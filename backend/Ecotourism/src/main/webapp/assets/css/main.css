@@ -55,6 +55,7 @@ body {
   color: var(--primary-text);
   background-color: var(--soft-cream);
   overflow-x: hidden;
+  padding-top: 20px; /* Add padding to prevent navbar from hiding content */
 }
 
 /* Typography */
