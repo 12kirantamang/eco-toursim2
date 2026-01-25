@@ -3,6 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="currentLocale" value="${sessionScope.locale != null ? sessionScope.locale : pageContext.request.locale}" />
+<fmt:setLocale value="${currentLocale}" />
+<fmt:setBundle basename="resources.messages" />
+
 <c:import url="/common/header.jsp" />
 <c:import url="/common/navbar.jsp" />
 
@@ -220,8 +224,8 @@
 
 <div class="booking-form-container">
     <div class="form-header">
-        <h1>${not empty booking ? 'Edit Booking' : 'Create New Booking'}</h1>
-        <p>${not empty booking ? 'Update your booking details' : 'Fill in the details to book your eco-tourism adventure'}</p>
+        <h1><fmt:message key="${not empty booking ? 'booking.titleEdit' : 'booking.title'}" /></h1>
+        <p><fmt:message key="${not empty booking ? 'booking.subtitleEdit' : 'booking.subtitle'}" /></p>
     </div>
     
     <c:if test="${not empty error}">
@@ -247,7 +251,7 @@
         <div class="form-group">
             <label for="bookingDate" class="form-label">
                 <i class="fas fa-calendar"></i>
-                Booking Date <span class="required">*</span>
+                <fmt:message key="booking.date" /> <span class="required">*</span>
             </label>
             <input type="date" 
                    id="bookingDate" 
@@ -256,30 +260,30 @@
                    required
                    min="${minDate}"
                    value="${not empty booking ? booking.bookingDate : param.bookingDate}">
-            <small class="form-help">Select your preferred visit date</small>
+            <small class="form-help"><fmt:message key="booking.date.help" /></small>
         </div>
         
         <!-- Time Slot -->
         <div class="form-group">
             <label for="timeSlot" class="form-label">
                 <i class="fas fa-clock"></i>
-                Time Slot <span class="required">*</span>
+                <fmt:message key="booking.timeSlot" /> <span class="required">*</span>
             </label>
             <select id="timeSlot" name="timeSlot" class="form-control" required>
-                <option value="">-- Select Time Slot --</option>
-                <option value="09:00-11:00" ${(not empty booking && booking.timeSlot == '09:00-11:00') || param.timeSlot == '09:00-11:00' ? 'selected' : ''}>Morning (9:00 AM - 11:00 AM)</option>
-                <option value="11:00-13:00" ${(not empty booking && booking.timeSlot == '11:00-13:00') || param.timeSlot == '11:00-13:00' ? 'selected' : ''}>Late Morning (11:00 AM - 1:00 PM)</option>
-                <option value="13:00-15:00" ${(not empty booking && booking.timeSlot == '13:00-15:00') || param.timeSlot == '13:00-15:00' ? 'selected' : ''}>Afternoon (1:00 PM - 3:00 PM)</option>
-                <option value="15:00-17:00" ${(not empty booking && booking.timeSlot == '15:00-17:00') || param.timeSlot == '15:00-17:00' ? 'selected' : ''}>Late Afternoon (3:00 PM - 5:00 PM)</option>
+                <option value=""><fmt:message key="booking.timeSlot.select" /></option>
+                <option value="09:00-11:00" ${(not empty booking && booking.timeSlot == '09:00-11:00') || param.timeSlot == '09:00-11:00' ? 'selected' : ''}><fmt:message key="booking.timeSlot.morning" /></option>
+                <option value="11:00-13:00" ${(not empty booking && booking.timeSlot == '11:00-13:00') || param.timeSlot == '11:00-13:00' ? 'selected' : ''}><fmt:message key="booking.timeSlot.lateMorning" /></option>
+                <option value="13:00-15:00" ${(not empty booking && booking.timeSlot == '13:00-15:00') || param.timeSlot == '13:00-15:00' ? 'selected' : ''}><fmt:message key="booking.timeSlot.afternoon" /></option>
+                <option value="15:00-17:00" ${(not empty booking && booking.timeSlot == '15:00-17:00') || param.timeSlot == '15:00-17:00' ? 'selected' : ''}><fmt:message key="booking.timeSlot.lateAfternoon" /></option>
             </select>
-            <small class="form-help">Choose your preferred time slot</small>
+            <small class="form-help"><fmt:message key="booking.timeSlot.help" /></small>
         </div>
         
         <!-- Visitor Count -->
         <div class="form-group">
             <label for="visitorCount" class="form-label">
                 <i class="fas fa-users"></i>
-                Number of Visitors <span class="required">*</span>
+                <fmt:message key="booking.visitors" /> <span class="required">*</span>
             </label>
             <input type="number" 
                    id="visitorCount" 
@@ -289,16 +293,16 @@
                    max="50"
                    required
                    value="${not empty booking ? booking.visitorCount : (param.visitorCount != null ? param.visitorCount : 1)}">
-            <small class="form-help">Enter the total number of visitors (1-50)</small>
+            <small class="form-help"><fmt:message key="booking.visitors.help" /></small>
         </div>
         
         <!-- Places Selection -->
         <div class="form-group">
             <label class="form-label">
                 <i class="fas fa-map-marker-alt"></i>
-                Select Places to Visit <span class="required">*</span>
+                <fmt:message key="booking.places" /> <span class="required">*</span>
             </label>
-            <small class="form-help">Choose one or more attractions to include in your booking</small>
+            <small class="form-help"><fmt:message key="booking.places.help" /></small>
             
             <div class="places-grid">
                 <c:forEach var="place" items="${places}">
@@ -322,22 +326,22 @@
         <!-- Calculation Summary -->
         <div class="calculation-section">
             <div class="calculation-title">
-                <i class="fas fa-calculator"></i> Booking Summary
+                <i class="fas fa-calculator"></i> <fmt:message key="booking.summary" />
             </div>
             <div class="calculation-row">
-                <span>Selected Places:</span>
+                <span><fmt:message key="booking.summary.places" /></span>
                 <span id="selectedPlacesCount">0</span>
             </div>
             <div class="calculation-row">
-                <span>Visitors:</span>
+                <span><fmt:message key="booking.summary.visitors" /></span>
                 <span id="displayVisitorCount">1</span>
             </div>
             <div class="calculation-row">
-                <span>Price per Person:</span>
+                <span><fmt:message key="booking.summary.pricePerPerson" /></span>
                 <span id="pricePerPerson">¥0.00</span>
             </div>
             <div class="calculation-total">
-                <span>Total Amount:</span>
+                <span><fmt:message key="booking.summary.total" /></span>
                 <span class="total-amount" id="displayTotalAmount">¥0.00</span>
             </div>
         </div>
@@ -348,7 +352,7 @@
         <!-- Form Actions -->
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-check"></i> ${not empty booking ? 'Update Booking' : 'Confirm Booking'}
+                <i class="fas fa-check"></i> <fmt:message key="${not empty booking ? 'booking.update' : 'booking.confirm'}" />
             </button>
         </div>
     </form>

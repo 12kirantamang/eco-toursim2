@@ -3,6 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="currentLocale" value="${sessionScope.locale != null ? sessionScope.locale : pageContext.request.locale}" />
+<fmt:setLocale value="${currentLocale}" />
+<fmt:setBundle basename="resources.messages" />
+
 <c:import url="/common/header.jsp" />
 <c:import url="/common/navbar.jsp" />
 
@@ -222,9 +226,9 @@
 
 <div class="bookings-container">
     <div class="page-header">
-        <h1>My Bookings</h1>
+        <h1><fmt:message key="bookings.title" /></h1>
         <a href="<c:url value='/bookings?action=new' />" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Create New Booking
+            <i class="fas fa-plus"></i> <fmt:message key="bookings.new" />
         </a>
     </div>
     
@@ -238,10 +242,10 @@
         <c:when test="${empty bookings}">
             <div class="empty-state">
                 <i class="fas fa-calendar-times"></i>
-                <h3>No bookings yet</h3>
-                <p>Start exploring attractions and make your first booking!</p>
+                <h3><fmt:message key="bookings.empty.title" /></h3>
+                <p><fmt:message key="bookings.empty.subtitle" /></p>
                 <a href="<c:url value='/bookings?action=new' />" class="btn btn-primary" style="margin-top: 20px;">
-                    Create Your First Booking
+                    <fmt:message key="bookings.new" />
                 </a>
             </div>
         </c:when>
@@ -251,17 +255,17 @@
                     <div class="booking-card">
                         <div class="booking-header">
                             <span class="booking-id">
-                                <i class="fas fa-ticket-alt"></i> Booking #${booking.bookingId}
+                                <i class="fas fa-ticket-alt"></i> <fmt:message key="bookings.id" /> #${booking.bookingId}
                             </span>
                             <span class="booking-status status-confirmed">
-                                <i class="fas fa-check-circle"></i> Confirmed
+                                <i class="fas fa-check-circle"></i> <fmt:message key="bookings.status" />
                             </span>
                         </div>
                         
                         <div class="booking-details">
                             <div class="detail-item">
                                 <span class="detail-label">
-                                    <i class="fas fa-calendar"></i> Booking Date
+                                    <i class="fas fa-calendar"></i> <fmt:message key="bookings.date" />
                                 </span>
                                 <span class="detail-value">
                                     ${booking.bookingDate}
@@ -270,21 +274,21 @@
                             
                             <div class="detail-item">
                                 <span class="detail-label">
-                                    <i class="fas fa-clock"></i> Time Slot
+                                    <i class="fas fa-clock"></i> <fmt:message key="bookings.timeSlot" />
                                 </span>
                                 <span class="detail-value">${booking.timeSlot}</span>
                             </div>
                             
                             <div class="detail-item">
                                 <span class="detail-label">
-                                    <i class="fas fa-users"></i> Visitors
+                                    <i class="fas fa-users"></i> <fmt:message key="bookings.visitors" />
                                 </span>
                                 <span class="detail-value">${booking.visitorCount}</span>
                             </div>
                             
                             <div class="detail-item">
                                 <span class="detail-label">
-                                    <i class="fas fa-yen-sign"></i> Total Amount
+                                    <i class="fas fa-yen-sign"></i> <fmt:message key="bookings.totalAmount" />
                                 </span>
                                 <span class="detail-value amount">¥<fmt:formatNumber value="${booking.totalAmount}" pattern="#,##0.00" /></span>
                             </div>
@@ -292,7 +296,7 @@
                         
                         <div class="booking-places">
                             <div class="places-title">
-                                <i class="fas fa-map-marker-alt"></i> Places Included:
+                                <i class="fas fa-map-marker-alt"></i> <fmt:message key="bookings.placesIncluded" />
                             </div>
                             <div class="places-list">
                                 <c:forEach var="place" items="${booking.places}">
@@ -304,12 +308,13 @@
                         <div class="booking-actions">
                             <a href="<c:url value='/bookings?action=edit&id=${booking.bookingId}' />" 
                                class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Edit Booking
+                                <i class="fas fa-edit"></i> <fmt:message key="bookings.edit" />
                             </a>
+                            <fmt:message key="bookings.deleteConfirm" var="deleteConfirmMsg" />
                             <a href="<c:url value='/bookings?action=delete&id=${booking.bookingId}' />" 
                                class="btn btn-danger btn-sm"
-                               onclick="return confirm('Are you sure you want to delete this booking?');">
-                                <i class="fas fa-trash"></i> Delete Booking
+                               onclick="return confirm('${deleteConfirmMsg}');">
+                                <i class="fas fa-trash"></i> <fmt:message key="bookings.delete" />
                             </a>
                         </div>
                     </div>
