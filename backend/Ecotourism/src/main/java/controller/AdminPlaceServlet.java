@@ -23,7 +23,7 @@ import java.util.UUID;
 )
 public class AdminPlaceServlet extends AdminBaseServlet {
 
-    private static final String UPLOAD_DIR = "assets/img/uploads";
+    private static final String UPLOAD_DIR = "assets/img/resources/uploads";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -87,17 +87,24 @@ public class AdminPlaceServlet extends AdminBaseServlet {
     private String handleUpload(HttpServletRequest req) throws IOException, ServletException {
         Part filePart = req.getPart("image");
         if (filePart != null && filePart.getSize() > 0) {
-            String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs(); // safer
 
-            String fileName = UUID.randomUUID() + "_" + new File(filePart.getSubmittedFileName()).getName();
+            // Use getServletContext().getRealPath("/") to point to webapp root
+            String uploadPath = getServletContext().getRealPath("/") + UPLOAD_DIR.replace("/", File.separator);
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String originalFileName = new File(filePart.getSubmittedFileName()).getName();
+            String fileName = UUID.randomUUID() + "_" + originalFileName;
+
+            // Save file to server folder
             filePart.write(uploadPath + File.separator + fileName);
 
-            return UPLOAD_DIR + "/" + fileName;
+            // Return **relative path for use in HTML** (so JSP can show <img src="...">)
+            return fileName; 
         }
         return null;
     }
+
 
     private int parseInt(String str, int defaultVal) {
         try { return Integer.parseInt(str.trim()); } catch (Exception e) { return defaultVal; }
