@@ -236,10 +236,10 @@
                 </div>
                 <div class="info-content">
                     <h3><fmt:message key="contact.info.address" /></h3>
-                    <p>Okayama Tourism Office<br>
-                    2-1-1 Omote-cho, Kita-ku<br>
-                    Okayama City, Okayama 700-0822<br>
-                    Japan</p>
+                    <p><fmt:message key="contact.info.address.line1" /><br>
+                    <fmt:message key="contact.info.address.line2" /><br>
+                    <fmt:message key="contact.info.address.line3" /><br>
+                    <fmt:message key="contact.info.address.line4" /></p>
                 </div>
             </div>
             
@@ -249,9 +249,9 @@
                 </div>
                 <div class="info-content">
                     <h3><fmt:message key="contact.info.phone" /></h3>
-                    <p>+81 86-803-1332<br>
-                    Monday - Friday: 9:00 AM - 6:00 PM<br>
-                    Saturday: 10:00 AM - 4:00 PM</p>
+                    <p><fmt:message key="contact.info.phone.number" /><br>
+                    <fmt:message key="contact.info.phone.weekday" /><br>
+                    <fmt:message key="contact.info.phone.saturday" /></p>
                 </div>
             </div>
             
@@ -261,9 +261,9 @@
                 </div>
                 <div class="info-content">
                     <h3><fmt:message key="contact.info.email" /></h3>
-                    <p>info@okayama-ecotourism.jp<br>
-                    bookings@okayama-ecotourism.jp<br>
-                    support@okayama-ecotourism.jp</p>
+                    <p><fmt:message key="contact.info.email.general" /><br>
+                    <fmt:message key="contact.info.email.bookings" /><br>
+                    <fmt:message key="contact.info.email.support" /></p>
                 </div>
             </div>
             
@@ -273,9 +273,9 @@
                 </div>
                 <div class="info-content">
                     <h3><fmt:message key="contact.info.hours" /></h3>
-                    <p>Monday - Friday: 9:00 AM - 6:00 PM<br>
-                    Saturday: 10:00 AM - 4:00 PM<br>
-                    Sunday & Holidays: Closed</p>
+                    <p><fmt:message key="contact.info.hours.weekday" /><br>
+                    <fmt:message key="contact.info.hours.saturday" /><br>
+                    <fmt:message key="contact.info.hours.sunday" /></p>
                 </div>
             </div>
         </div>
