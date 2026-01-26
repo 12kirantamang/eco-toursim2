@@ -310,8 +310,9 @@
 							    Edit
 							</a>
 
-                            <form action="<c:url value='/admin/users/delete'/>"
+                            <form action="<c:url value='/admin/users'/>"
                                   method="post" style="display:inline">
+                                <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="${u.userId}">
                                 <button class="delete"
                                         onclick="return confirm('Delete user?')">
@@ -424,8 +425,9 @@
 							   Edit
 							</a>
 							
-							<form action="<c:url value='/admin/places/delete'/>"
+							<form action="<c:url value='/admin/places'/>"
 							      method="post" style="display:inline">
+							    <input type="hidden" name="action" value="delete">
 							    <input type="hidden" name="id" value="${p.placeId}">
 							    <button class="delete"
 							            onclick="return confirm('Delete place?')">
