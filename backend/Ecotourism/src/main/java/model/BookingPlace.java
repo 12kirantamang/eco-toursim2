@@ -5,14 +5,11 @@ public class BookingPlace {
     private int bookingId;
     private int placeId;
 
-    // Optional: add place details for display
     private String placeName;
     private double pricePerPerson;
 
-    // Constructors
     public BookingPlace() {}
 
-    // ===== Getters & Setters =====
     public int getBookingPlaceId() {
         return bookingPlaceId;
     }

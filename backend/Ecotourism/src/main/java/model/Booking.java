@@ -15,6 +15,8 @@ public class Booking {
     
     private String userName;
     private List<BookingPlace> bookingPlaces;
+    private String bookingPlacesJson;
+    
 	public int getBookingId() {
 		return bookingId;
 	}
@@ -69,5 +71,12 @@ public class Booking {
     public void setUserName(String userName) { 
     	this.userName = userName;
     }
+    public String getBookingPlacesJson() {
+    	return bookingPlacesJson;
+    }
+    public void setBookingPlacesJson(String bookingPlacesJson) {
+    	this.bookingPlacesJson = bookingPlacesJson;
+    }
+
 
 }
