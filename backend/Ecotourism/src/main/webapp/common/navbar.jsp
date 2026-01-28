@@ -15,13 +15,13 @@
     </label>
         
         <ul class="nav-links">
-		    <li><a href="<c:url value='/home' />" data-translate="homeTitle">Home</a></li>
+		    <li><a href="<c:url value='/auth' />" data-translate="homeTitle">Home</a></li>
 		    
 		    <li><a href="<c:url value='/index.jsp#about' />" data-translate="aboutTitle">About</a></li>
 		    
 		    <li><a href="<c:url value='/attractions.jsp' />" data-translate="attractionsTitle">Attractions</a></li>
 		    
-		    <li><a href="<c:url value='/adventure.jsp' />" data-translate="adventureTitle">Adventure</a></li>
+		    <li><a href="<c:url value='/adventure' />" data-translate="adventureTitle">Adventure</a></li>
 		    
 		    <li><a href="<c:url value='/index.jsp#food' />" data-translate="foodTitle">Food</a></li>
 		    <li><a href="<c:url value='/index.jsp#events' />" data-translate="eventsTitle">Events</a></li>

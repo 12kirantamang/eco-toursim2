@@ -4,10 +4,13 @@ import dao.BookingDAO;
 import dao.BookingPlaceDAO;
 import model.Booking;
 import model.BookingPlace;
+import model.User;
 import util.DBConnection;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,62 +20,75 @@ import java.time.LocalDate;
 @WebServlet("/bookings")
 public class BookingServlet extends HttpServlet {
 
-    private static final String LIST_JSP = "/user/booking_list.jsp";
-    private static final String FORM_JSP = "/user/booking_form.jsp";
+    // ===================== GET (View My Bookings) =====================
+//    @Override
+//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//
+//        HttpSession session = request.getSession(false);
+//
+//        // 🔒 Auth check
+//        if (session == null || session.getAttribute("user") == null) {
+//            response.sendRedirect(request.getContextPath() + "/auth");
+//            return;
+//        }
+//
+//        User user = (User) session.getAttribute("user");
+//        int userId = user.getUserId();
+//
+//        try (Connection conn = DBConnection.getConnection()) {
+//
+//            BookingDAO bookingDAO = new BookingDAO(conn);
+//            var bookings = bookingDAO.getBookingsByUserId(userId);
+//
+//            request.setAttribute("bookings", bookings);
+//            request.getRequestDispatcher("/bookings.jsp").forward(request, response);
+//
+//        } catch (Exception e) {
+//            throw new ServletException("Failed to load bookings", e);
+//        }
+//    }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        int userId = (int) session.getAttribute("userId");
-
-        try (Connection conn = DBConnection.getConnection()) {
-            BookingDAO bookingDAO = new BookingDAO(conn);
-            // Get bookings for this user only
-            var bookings = bookingDAO.getBookingsByUserId(userId);
-
-            request.setAttribute("bookings", bookings);
-            request.getRequestDispatcher(LIST_JSP).forward(request, response);
-
-        } catch (Exception e) {
-            throw new ServletException("Failed to load your bookings", e);
-        }
-    }
-
+    // ===================== POST (Create Booking) =====================
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
-        int userId = (int) session.getAttribute("userId");
+        User user = (User) session.getAttribute("user");
+        int userId = user.getUserId();
 
         Connection conn = null;
+
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); // start transaction
+            conn.setAutoCommit(false); // 🔐 transaction start
 
             BookingDAO bookingDAO = new BookingDAO(conn);
             BookingPlaceDAO bookingPlaceDAO = new BookingPlaceDAO(conn);
 
-            // ---------- Read form ----------
+            // -------- Read & validate form --------
             LocalDate bookingDate = LocalDate.parse(request.getParameter("bookingDate"));
             String timeSlot = request.getParameter("timeSlot");
             int visitorCount = Integer.parseInt(request.getParameter("visitorCount"));
             double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
-            String[] placeIds = request.getParameterValues("placeIds"); // multi-select or checkboxes
+            String[] placeIds = request.getParameterValues("placeIds");
 
-            // ---------- Create Booking ----------
+            if (placeIds == null || placeIds.length == 0) {
+                throw new ServletException("No adventure selected.");
+            }
+
+            if (visitorCount < 1) {
+                throw new ServletException("Invalid visitor count.");
+            }
+
+            // -------- Create booking --------
             Booking booking = new Booking();
             booking.setUserId(userId);
             booking.setBookingDate(bookingDate);
@@ -81,39 +97,32 @@ public class BookingServlet extends HttpServlet {
             booking.setTotalAmount(totalAmount);
             booking.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
-            // Add booking and get generated bookingId
-            boolean added = bookingDAO.addBooking(booking);
-            if (!added) {
+            if (!bookingDAO.addBooking(booking)) {
                 throw new SQLException("Failed to create booking");
             }
 
-            // ---------- Add Booking Places ----------
-            if (placeIds != null) {
-                for (String pid : placeIds) {
-                    BookingPlace bp = new BookingPlace();
-                    bp.setBookingId(booking.getBookingId());
-                    bp.setPlaceId(Integer.parseInt(pid));
+            // -------- Booking places --------
+            for (String pid : placeIds) {
+                BookingPlace bp = new BookingPlace();
+                bp.setBookingId(booking.getBookingId());
+                bp.setPlaceId(Integer.parseInt(pid));
 
-                    boolean bpAdded = bookingPlaceDAO.addBookingPlace(bp);
-                    if (!bpAdded) {
-                        throw new SQLException("Failed to add booking place: " + pid);
-                    }
+                if (!bookingPlaceDAO.addBookingPlace(bp)) {
+                    throw new SQLException("Failed to add booking place: " + pid);
                 }
             }
 
-            // Commit transaction
             conn.commit();
-            response.sendRedirect(request.getContextPath() + "/mybookings");
+            response.sendRedirect(request.getContextPath() + "/bookings");
 
         } catch (Exception e) {
-            // Rollback if something goes wrong
+
             if (conn != null) {
-                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+                try { conn.rollback(); } catch (SQLException ignored) {}
             }
 
-            e.printStackTrace();
-            request.setAttribute("error", "Booking failed: " + e.getMessage());
-            request.getRequestDispatcher(FORM_JSP).forward(request, response);
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("/adventure2.jsp").forward(request, response);
 
         } finally {
             if (conn != null) {

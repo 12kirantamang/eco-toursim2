@@ -72,7 +72,6 @@
                         </div>
                     </div>
                     
-                  
                     <div class="hotel-price">
                         <div class="availability"></div>
                         <div class="price-info">
